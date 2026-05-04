@@ -1,0 +1,383 @@
+# Σολωμός Pattern Library
+#
+# This is the linguistic core of Solomos. Each pattern documents a specific
+# way AI-generated Greek goes wrong, and how a native would phrase it instead.
+#
+# Categories:
+#   calque       - direct translations of English structures/idioms
+#   register     - wrong formality level for context
+#   syntax       - English sentence shape forced onto Greek
+#   word_choice  - wrong word in context (often dictionary-correct but unnatural)
+#   filler       - bureaucratic padding that natives don't use
+#   anglicism    - English word used where a Greek one is natural
+#
+# When adding a pattern, prefer specificity. "X is bad" is less useful than
+# "X is bad in marketing context, fine in legal context, replace with Y when..."
+
+patterns:
+
+  # ─── CALQUES ────────────────────────────────────────────────────────────────
+
+  - id: calque-makes-sense
+    category: calque
+    bad: "έχει νόημα"
+    good: "βγάζει νόημα"
+    english_source: "it makes sense"
+    context: "When meaning 'this is logical / this argument holds'"
+    registers: [all]
+    notes: |
+      «Έχει νόημα» literally means "has meaning/purpose" - correct in
+      "η ζωή έχει νόημα". For "that argument makes sense" use «βγάζει νόημα»
+      or «στέκει» or «είναι λογικό».
+
+  - id: calque-take-care-of
+    category: calque
+    bad: "πάρε φροντίδα"
+    good: "φρόντισε / αναλαμβάνω / κανονίζω"
+    english_source: "take care of it"
+    registers: [all]
+    notes: "«Πάρε φροντίδα» does not exist in Greek. Use «θα το φροντίσω», «θα το αναλάβω», «θα το κανονίσω» depending on context."
+
+  - id: calque-make-a-decision
+    category: calque
+    bad: "κάνω μια απόφαση"
+    good: "παίρνω μια απόφαση"
+    english_source: "make a decision"
+    registers: [all]
+    notes: "Greek takes decisions, doesn't make them."
+
+  - id: calque-have-a-good-time
+    category: calque
+    bad: "έχω έναν καλό χρόνο"
+    good: "περνάω καλά"
+    english_source: "have a good time"
+    registers: [casual, marketing]
+
+  - id: calque-let-me-know
+    category: calque
+    bad: "άσε με να ξέρω"
+    good: "πες μου / ενημέρωσέ με"
+    english_source: "let me know"
+    registers: [all]
+    notes: "«Άσε με να ξέρω» is a near-direct translation that no native would use."
+
+  - id: calque-looking-forward
+    category: calque
+    bad: "κοιτάζοντας μπροστά"
+    good: "ανυπομονώ / περιμένω με ενδιαφέρον"
+    english_source: "looking forward to"
+    registers: [business, formal]
+
+  - id: calque-reach-out
+    category: calque
+    bad: "φτάνω έξω / απλώνω χέρι"
+    good: "επικοινωνώ / έρχομαι σε επαφή"
+    english_source: "reach out"
+    registers: [business, formal]
+
+  - id: calque-it-is-recommended
+    category: calque
+    bad: "είναι συνιστώμενο"
+    good: "συνιστάται / προτείνεται"
+    english_source: "it is recommended"
+    registers: [all]
+    notes: "Use the impersonal verb form, not the participle construction."
+
+  - id: calque-feel-free
+    category: calque
+    bad: "νιώστε ελεύθεροι"
+    good: "μη διστάσετε / είστε ευπρόσδεκτοι"
+    english_source: "feel free to"
+    registers: [business, formal]
+
+  - id: calque-keep-in-mind
+    category: calque
+    bad: "κράτα στο μυαλό"
+    good: "να έχεις υπόψη / θυμήσου ότι"
+    english_source: "keep in mind"
+    registers: [all]
+
+  - id: calque-at-the-end-of-the-day
+    category: calque
+    bad: "στο τέλος της ημέρας"
+    good: "εν τέλει / τελικά / στην τελική"
+    english_source: "at the end of the day"
+    registers: [all]
+    notes: "«Στο τέλος της ημέρας» is literal time-of-day. The idiom requires «εν τέλει» (formal) or «τελικά» / «στην τελική» (casual)."
+
+  - id: calque-go-ahead
+    category: calque
+    bad: "πήγαινε μπροστά"
+    good: "προχώρα / προχωρήστε"
+    english_source: "go ahead"
+    registers: [all]
+
+  - id: calque-make-sure
+    category: calque
+    bad: "κάνε σίγουρο"
+    good: "βεβαιώσου / φρόντισε / σιγουρέψου"
+    english_source: "make sure"
+    registers: [all]
+
+  - id: calque-deal-close
+    category: calque
+    bad: "η συμφωνία θα κλείσει / κλείνουμε τη συμφωνία / κλείνει η συναλλαγή"
+    good: "η συμφωνία θα οριστικοποιηθεί / θα ολοκληρωθεί / θα υπογραφεί"
+    english_source: "to close a deal / the deal closes"
+    context: |
+      Στα αγγλικά οι συμφωνίες «κλείνουν» (close). Στα ελληνικά «οριστικοποιούνται»,
+      «ολοκληρώνονται», ή «υπογράφονται», ανάλογα με τη φάση. Το «κλείνω» στα
+      ελληνικά αφορά πόρτες και ωράρια. Σε προφορική, οικεία χρήση («κλείσαμε τη
+      δουλειά») δουλεύει, αλλά σε formal ή business γραπτή ανακοίνωση παραμένει
+      αμετάφραστος αγγλισμός.
+    registers: [business, formal]
+
+  - id: calque-next-level
+    category: calque
+    bad: "ανεβάστε την επιχείρησή σας στο επόμενο επίπεδο / πάμε στο επόμενο επίπεδο"
+    good: "μεγαλώστε / εξελιχθείτε / κάντε το επόμενο βήμα / [ή κόψτε το και πείτε τι ακριβώς προσφέρετε]"
+    english_source: "take it to the next level"
+    context: |
+      Από τα πιο μολυντικά αμερικανικά διαφημιστικά calques. Στα ελληνικά
+      το «επόμενο επίπεδο» δεν είναι ιδιωματικό όταν αναφέρεται σε
+      επαγγελματική εξέλιξη — ηχεί video game. Η φράση συνήθως δεν
+      κουβαλάει συγκεκριμένο ισχυρισμό, οπότε η καλύτερη αντικατάσταση
+      είναι να γραφτεί τι πραγματικά κερδίζει ο πελάτης. Όπου υπάρχει
+      ουσιαστικό περιεχόμενο, εναλλακτικά: «προχωρήστε», «εξελιχθείτε»,
+      «κάντε το επόμενο βήμα», «μεγαλώστε».
+    registers: [marketing, business]
+
+  # ─── SYNTAX ─────────────────────────────────────────────────────────────────
+
+  - id: syntax-english-passive-overuse
+    category: syntax
+    bad: "Η απόφαση έγινε πάρθηκε από την επιτροπή"
+    good: "Η επιτροπή πήρε την απόφαση"
+    context: "AI defaults to passive constructions because English does. Greek prefers active when the agent is known."
+    registers: [all]
+    notes: "Passive is correct in legal, academic, and certain formal contexts. In business, marketing, and casual writing, prefer active voice unless the agent is genuinely unknown or irrelevant."
+
+  - id: syntax-noun-stacking
+    category: syntax
+    bad: "Η διαδικασία βελτιστοποίησης απόδοσης συστήματος"
+    good: "Η διαδικασία που βελτιστοποιεί την απόδοση του συστήματος"
+    context: "English allows long noun chains; Greek prefers verb phrases or relative clauses."
+    registers: [all]
+
+  - id: syntax-fronted-conditional
+    category: syntax
+    bad: "Εάν θέλετε να μάθετε περισσότερα, παρακαλώ επικοινωνήστε"
+    good: "Επικοινωνήστε μαζί μας για περισσότερες πληροφορίες"
+    context: "AI loves fronted conditionals; Greek often handles these with a direct imperative or purpose clause."
+    registers: [marketing, business]
+
+  # ─── REGISTER ───────────────────────────────────────────────────────────────
+
+  - id: register-marketing-overformal
+    category: register
+    bad: "Η εταιρεία μας προσφέρει υπηρεσίες υψηλής ποιότητας"
+    good: "Φτιάχνουμε καλά προϊόντα. Σε φροντίζουμε."
+    context: "Generic high-formal marketing copy that says nothing. Specific, concrete language wins."
+    registers: [marketing]
+    notes: "Don't replace bad-formal with bad-casual. Replace it with specificity."
+
+  - id: register-business-cold
+    category: register
+    bad: "Παρακαλούμε όπως αποδεχθείτε την προσφορά μας"
+    good: "Θα χαρούμε να προχωρήσουμε με την προσφορά"
+    context: "Bureaucratic Greek that reads as cold even in formal contexts."
+    registers: [business]
+
+  - id: register-lexilog-overcasual
+    category: register
+    bad: "Λέει για κάτι που είναι πολύ ωραίο"
+    good: "Χρησιμοποιείται για κάτι ιδιαίτερα ευχάριστο ή εντυπωσιακό"
+    context: "Dictionary definitions need a neutral, slightly formal register - not chatty, not bureaucratic."
+    registers: [lexilog]
+
+  # ─── FILLER ─────────────────────────────────────────────────────────────────
+
+  - id: filler-thank-you-understanding
+    category: filler
+    bad: "Σας ευχαριστούμε για την κατανόησή σας"
+    good: "[remove unless there's a specific thing being apologized for]"
+    context: "Empty pre-emptive thanks. Native business writing closes with a concrete next step or just a clean signoff."
+    registers: [business, formal]
+
+  - id: filler-do-not-hesitate
+    category: filler
+    bad: "Παρακαλώ μη διστάσετε να επικοινωνήσετε"
+    good: "Είμαστε στη διάθεσή σας / Επικοινωνήστε μαζί μας για οτιδήποτε"
+    context: "Standard but overused. The replacements are warmer."
+    registers: [business]
+
+  - id: filler-i-hope-this-finds-you-well
+    category: filler
+    bad: "Ελπίζω αυτό το μήνυμα σας βρίσκει καλά"
+    good: "[skip - Greek emails don't open this way]"
+    context: "Pure English email convention dragged into Greek. Greek emails open with «Καλημέρα σας», «Γεια σας», or directly with the matter."
+    registers: [business, formal]
+
+  # ─── WORD CHOICE ────────────────────────────────────────────────────────────
+
+  - id: word-choice-significant
+    category: word_choice
+    bad: "σημαντικός"
+    good: "[depends - see notes]"
+    context: "AI overuses «σημαντικός» for everything. English 'significant', 'important', 'major', 'considerable' all collapse to «σημαντικός»."
+    registers: [all]
+    notes: |
+      Use «σημαντικός» for genuinely important. For other shades:
+      - 'considerable' → «αξιόλογος», «αξιοσημείωτος»
+      - 'major' → «μεγάλος», «κύριος»
+      - 'significant' (statistically) → «στατιστικά σημαντικός»
+      - 'meaningful' → «ουσιαστικός»
+
+  - id: word-choice-experience
+    category: word_choice
+    bad: "εμπειρία"
+    good: "[depends on context]"
+    context: "«Εμπειρία» is overused as a marketing buzzword. In native Greek marketing, more specific words land better."
+    registers: [marketing]
+
+  # ─── ANGLICISMS ─────────────────────────────────────────────────────────────
+
+  - id: anglicism-feedback
+    category: anglicism
+    bad: "feedback"
+    good: "ανατροφοδότηση / σχόλια / παρατηρήσεις"
+    context: "Common in Greek tech/business speech but jarring in written copy."
+    registers: [business, formal, marketing]
+    notes: "Acceptable in casual/internal speech. Avoid in customer-facing written copy."
+
+  - id: anglicism-meeting
+    category: anglicism
+    bad: "μίτινγκ"
+    good: "συνάντηση / συσκεψη"
+    registers: [business, formal]
+
+  # ─── LEXILOG-SPECIFIC ───────────────────────────────────────────────────────
+
+  - id: lexilog-definition-shape
+    category: register
+    bad: "Αυτή η λέξη σημαίνει..."
+    good: "[start with the definition itself, no meta-prefix]"
+    context: "Dictionary definitions in Greek don't begin with «Αυτή η λέξη σημαίνει». They start with the definition: «Πρόσωπο που...» or the genus-differentia pattern."
+    registers: [lexilog]
+    notes: |
+      Standard Greek dictionary patterns:
+      - For nouns: noun phrase → «Πρόσωπο που...», «Κατάσταση κατά την οποία...»
+      - For verbs: 3rd person singular paraphrase → «Κάνει κάτι με σκοπό να...»
+      - For adjectives: «Αυτός που...», «Που αναφέρεται σε...»
+
+  - id: lexilog-example-naturalism
+    category: register
+    bad: "Παράδειγμα χρήσης της λέξης σε πρόταση"
+    good: "[a real-feeling sentence a native would actually say or write]"
+    context: "Examples should sound like sentences from real Greek life, not like textbook constructions designed to showcase the word."
+    registers: [lexilog]
+
+  # ─── META-LANGUAGE ──────────────────────────────────────────────────────────
+  #
+  # Patterns that show up when the assistant talks ABOUT its own work to the
+  # user (progress reports, confirmations, descriptions of what it changed),
+  # not in the deliverable itself. Tagged registers: [meta] so they apply only
+  # when reviewing the assistant's self-description, not user-facing output.
+
+  - id: meta-katharizo-keimeno
+    category: meta-language
+    bad: "καθαρίζω / καθάρισμα / καθαρισμένο (όταν αναφέρεται σε κείμενο)"
+    good: "επιμελούμαι / επιμέλεια / επιμελημένο  (ή: διορθώνω / διόρθωση / διορθωμένο, ξαναδουλεύω / ξαναδούλεμα / ξαναδουλεμένο)"
+    english_source: "to clean (text)"
+    context: "Στα ελληνικά «καθαρίζω» αφορά επιφάνειες, όχι κείμενα. Για συντακτική δουλειά πάνω σε κείμενο χρησιμοποιείται «επιμελούμαι» (αν είναι ολοκληρωμένη επιμέλεια) ή «διορθώνω» / «ξαναδουλεύω»."
+    registers: [meta]
+
+  - id: meta-kathetai-tairiazei
+    category: meta-language
+    bad: "κάθεται καλά / κάθεται ουδέτερα / κάθεται σε register"
+    good: "ταιριάζει / αρμόζει / πάει / είναι πιο κοντά σε"
+    english_source: "sits well / sits neutrally"
+    context: "Calque από το αγγλικό «sits». Στα ελληνικά μια λέξη ή φράση «ταιριάζει», «αρμόζει», «πάει», ή «είναι κοντά σε» κάτι. Δεν «κάθεται»."
+    registers: [meta]
+
+  - id: meta-prooimio-anyparkti-leksi
+    category: meta-language
+    bad: "μετα-προοίμιο"
+    good: "εισαγωγική φράση / προοίμιο / πρόλογος"
+    context: "Το «μετα-προοίμιο» δεν είναι ελληνική λέξη, είναι αυτοσχέδιο. Πες «εισαγωγική φράση» ή απλώς «προοίμιο»."
+    registers: [meta]
+
+  - id: meta-tech-loanwords-in-greek
+    category: meta-language
+    bad: "pattern / harness / skill / load / run / process / pipeline (αμετάφραστα μέσα σε ελληνική πρόταση)"
+    good: "μοτίβο·κανόνας / σύστημα / οδηγίες·εργαλείο / διαβάζω / κάνω·εφαρμόζω / επεξεργάζομαι / διαδικασία·ακολουθία"
+    english_source: "untranslated CS/process loanwords"
+    context: "Όταν περιγράφεις τη δουλειά σου στα ελληνικά, μην αφήνεις αγγλικούς όρους όπως «pattern», «harness», «skill», «load», «run», «process», «pipeline» αμετάφραστους. Όλοι έχουν φυσικά ελληνικά αντίστοιχα. Αν δυσκολεύεσαι, αναδιατύπωσε τη σκέψη εξ αρχής στα ελληνικά αντί να προσπαθείς να μεταφράσεις την αγγλική σου σκέψη."
+    registers: [meta]
+
+  - id: meta-etymigoria-paradidetai
+    category: meta-language
+    bad: "ετυμηγορία (εκτός νομικού πλαισίου) / παραδίδεται (ως ένδειξη κατάστασης)"
+    good: "κρίση / έτοιμο"
+    english_source: "verdict / shipped (project-management calque)"
+    context: "Η «ετυμηγορία» είναι νομικός όρος. Σε αξιολόγηση κειμένου χρησιμοποιείται η λέξη «κρίση». Το «παραδίδεται» αντιγράφει την αγγλική ορολογία διαχείρισης έργων («ship/shipped»). Στα ελληνικά λέμε ότι κάτι είναι «έτοιμο» ή «τελείωσε»."
+    registers: [meta]
+
+  - id: meta-svo-active-overuse
+    category: meta-language
+    bad: "Διόρθωσα τις αστοχίες και παραδίδω το αποτέλεσμα"
+    good: "Οι αστοχίες διορθώθηκαν και το κείμενο είναι έτοιμο"
+    english_source: "I fixed X and deliver Y (rigid SVO + project-management calque)"
+    context: "Τα αγγλικά απαιτούν αυστηρή σειρά Υποκείμενο-Ρήμα-Αντικείμενο με ρητό υποκείμενο. Τα ελληνικά συχνά προτιμούν παθητική φωνή ή απρόσωπη κατασκευή όταν η έμφαση πέφτει στο τι έγινε, όχι στο ποιος το έκανε. Όταν περιγράφεις τη δουλειά σου, η αυστηρή «εγώ έκανα Χ και παραδίδω Υ» δομή είναι αγγλική. Η φυσική ελληνική: «έγινε Χ, και Υ είναι έτοιμο»."
+    registers: [meta]
+
+  - id: meta-einai-pronouns-overuse
+    category: meta-language
+    bad: "Εγώ θεωρώ ότι η λύση είναι αποτελεσματική"
+    good: "Θεωρώ ότι η λύση δουλεύει / αποδίδει"
+    english_source: "overuse of 'is' and personal pronouns ported from English"
+    context: "Τα αγγλικά απαιτούν ρητό υποκείμενο (I, you, it) και συχνά συνδετικό «is/are» με κατηγορούμενο. Τα ελληνικά κουβαλούν το υποκείμενο μέσα στις καταλήξεις του ρήματος, και έχουν πολύ πλουσιότερα ρήματα που αντικαθιστούν το «είναι + επίθετο»: «δουλεύει», «αποδίδει», «λειτουργεί», «ισχύει», «ταιριάζει», «αρμόζει». Πέταξε το «εγώ/εσύ» και το «είναι» όταν η πρόταση μπορεί να σταθεί χωρίς αυτά."
+    registers: [meta]
+
+  - id: syntax-verb-over-heavy-noun
+    category: syntax
+    bad: "Στόχος μας είναι η βελτιστοποίηση της διαδικασίας."
+    good: "Στόχος μας είναι να βελτιστοποιήσουμε τη διαδικασία."
+    english_source: "Our goal is the optimization of the process. (English noun-heavy style)"
+    context: "Τα αγγλικά προτιμούν αφηρημένα ουσιαστικά («the optimization of», «the implementation of», «the analysis of») σε θέση όπου τα ελληνικά θα έβαζαν ρήμα. Όταν στο input βλέπεις δομή «X είναι η [ουσιαστικό] της [ουσιαστικό]», αναρωτήσου αν ο φυσικός ομιλητής θα έλεγε «X είναι να [ρήμα] το/τη [ουσιαστικό]». Άλλα παραδείγματα: «η εφαρμογή του σχεδίου» → «να εφαρμόσουμε το σχέδιο», «η ανάλυση των δεδομένων» → «να αναλύσουμε τα δεδομένα», «η ολοκλήρωση του έργου» → «να ολοκληρώσουμε το έργο». Η ρηματική απόδοση κρατάει τη ροή ζωντανή και αποφεύγει τον γραφειοκρατικό βάρος που φέρνει η σώρευση γενικών."
+    registers: [all]
+    notes: "Δεν εφαρμόζεται μηχανικά: μερικές φορές το ουσιαστικό είναι σωστό (π.χ. ως όρος σε λεξικό, νομικό κείμενο, ή όταν το ίδιο το συμβάν είναι το θέμα). Ο κανόνας πιάνει τις περιπτώσεις όπου ένα ουσιαστικό-διαδικασία στέκει στη θέση του ρήματος μόνο επειδή έτσι το είπαν τα αγγλικά."
+
+  # ─── ΥΠΕΡΔΙΟΡΘΩΤΙΣΜΟΣ (OVER-CORRECTION) ─────────────────────────────────────
+
+  - id: idiom-vgike-mprosta-stepped-up
+    category: word_choice
+    bad: "μπήκε μπροστά (όταν εννοείται «stepped up / ανέλαβε με ζήλο»)"
+    good: "βγήκε μπροστά"
+    english_source: "stepped up (over-corrected)"
+    context: "Ο φυσικός ελληνικός ιδιωματισμός για «πήρε πρωταγωνιστικό ρόλο, ανέλαβε προθυμότατα» είναι «βγήκε μπροστά». Το «μπήκε μπροστά» υπάρχει αλλά σημαίνει διαφορετικό πράγμα: «βρέθηκε σαν εμπόδιο, παρενέβη», ή «τέθηκε ως προτεραιότητα». Παγίδα υπερδιορθωτισμού: ο πειρασμός να βάλεις «μπήκε» επειδή είναι πιο συχνή λέξη οδηγεί σε λάθος ιδιωματισμό."
+    registers: [casual, business, formal]
+
+  - id: idiom-milisw-not-tha-ta-pw
+    category: word_choice
+    bad: "θα τα πω με την ομάδα"
+    good: "θα μιλήσω με την ομάδα / θα συνεννοηθώ με την ομάδα"
+    english_source: "follow up with (over-corrected to childish register)"
+    context: "Όταν διορθώνεται το «do a follow up», το «θα τα πω» ακούγεται απλοϊκό και σχεδόν παιδικό για επαγγελματικό περιβάλλον — ακόμα και σε casual εσωτερική κουβέντα ομάδας. Το «θα μιλήσω» κρατάει την αμεσότητα του casual αλλά διατηρεί επαγγελματική δυναμική. Για πιο μετρημένο τόνο: «θα συνεννοηθώ», «θα ξαναμιλήσουμε»."
+    registers: [casual, business, formal]
+
+  - id: idiom-kinoumaste-same-wavelength
+    category: word_choice
+    bad: "πάμε στο ίδιο μήκος κύματος"
+    good: "κινούμαστε στο ίδιο μήκος κύματος / βρισκόμαστε στο ίδιο μήκος κύματος"
+    english_source: "on the same wavelength (weak verb)"
+    context: "Ο πάγιος ελληνικός ιδιωματισμός θέλει ρήμα συντονισμού/θέσης: «κινούμαστε», «βρισκόμαστε». Το «πάμε» είναι αδύναμο και απλοϊκό για τη συγκεκριμένη μεταφορά κύματος. Παγίδα υπερδιορθωτισμού: η επιλογή του απλούστερου ρήματος αδυνατίζει τον ιδιωματισμό."
+    registers: [all]
+
+  - id: meta-over-correction-trap
+    category: meta-language
+    bad: "Επιλογή της πιο απλής ή πρώτης διαθέσιμης ελληνικής λέξης για αντικατάσταση αγγλισμού, χωρίς έλεγχο αν ο φυσικός ομιλητής θα την έλεγε"
+    good: "Επιλογή της λέξης ή του ιδιωματισμού που χρησιμοποιεί όντως ο φυσικός ομιλητής στο συγκεκριμένο περιβάλλον και register"
+    english_source: "over-correction (translation pitfall)"
+    context: "Κάθε διόρθωση αγγλισμού ρισκάρει να πέσει στο αντίθετο άκρο: στην προσπάθεια να εξαλειφθεί το ξενικό σχήμα, επιλέγεται το πιο απλό ή το πρώτο ελληνικό ισοδύναμο που ξέρεις. Συχνά αυτό ακούγεται παιδικό, άτονο, ή ιδιωματικά λάθος. Παραδείγματα παγίδας: «do follow up» → «θα τα πω» (παιδικό· σωστό «θα μιλήσω»), «stepped up» → «μπήκε μπροστά» (λάθος ιδιωματισμός· σωστό «βγήκε μπροστά»), «on the same wavelength» → «πάμε» (αδύναμο ρήμα· σωστό «κινούμαστε»). Έλεγχος μετά τη διόρθωση: διάβασε δυνατά τη νέα φράση. Αν ακούγεται απλοϊκή ή σαν «μετάφραση από άλλη μεριά», ο διορθωτισμός χτύπησε στο άλλο άκρο. Ψάξε ποιο ιδιωματικό σχήμα χρησιμοποιεί ο φυσικός ομιλητής σε αυτό ακριβώς το context, όχι το πρώτο που σου ήρθε."
+    registers: [meta]
