@@ -1,0 +1,230 @@
+# Σολωμός Pattern Library: slim safety-net edition (2026-05-07)
+#
+# These patterns are AI-tic safety net, NOT prescriptions. Each catches a
+# specific AI-fluency failure that native Greek instinct alone might miss.
+# Apply automatically. For everything else, trust your native Greek fluency.
+#
+# The full historical pattern library (73 entries from rounds 1-5) is
+# preserved at references/archive/patterns_full.yaml for reference.
+
+patterns:
+
+  # ─── ABSOLUTE BANS (always, regardless of register) ──────────────────────
+
+  - id: punct-em-dash-anti-elliniko
+    category: punctuation
+    bad: "— (em-dash) ή – (en-dash) μέσα σε ελληνική πρόταση ως διακοπή ή επεξήγηση"
+    good: ", (κόμμα) / . (τελεία) / : (άνω-κάτω τελεία) / ( ) (παρένθεση)"
+    context: |
+      Απόλυτος κανόνας. Em-dash και en-dash δεν ανήκουν στην ελληνική
+      στίξη πεζού λόγου. Είναι κλασικό AI marker (τα LLMs τα διασκορπίζουν
+      παντού επειδή στα αγγλικά είναι κοινά).
+      Εξαίρεση μόνο: λογοτεχνικός διάλογος («— Καλημέρα, είπε»).
+      Καμία στιλιστική/ποιητική δικαιολογία δεν παρακάμπτει τον κανόνα.
+    registers: [all]
+
+  - id: meta-osfritikes-metafores
+    category: ai_slop
+    bad: "μυρίζει αγγλική σκέψη / μυρίζει μετάφραση / έχει άρωμα μετάφρασης / μεταφραστικός ήχος"
+    good: "προδίδει αγγλική αφετηρία / φαίνεται μεταφρασμένο / ακούγεται ξενικό / στάζει αγγλικά / κουβαλάει αγγλική σκέψη"
+    english_source: "smells of translation / reeks of English"
+    context: |
+      Απόλυτος κανόνας. Καμία οσφρητική μεταφορά για γλώσσα/σκέψη/κείμενο.
+      Calque από smells of/reeks of. Στα ελληνικά μια σκέψη δεν μυρίζει.
+      Καμία προτίμηση χρήστη ή ποιητική δικαιολογία δεν παρακάμπτει.
+    registers: [all, meta]
+
+  # ─── AI SLOP FORMS (αυτόματα φεύγουν) ───────────────────────────────────
+
+  - id: ai-slop-listicle-tricolon
+    category: ai_slop
+    bad: "Είναι ο φίλος που Χ. Ο σύντροφος που Υ. Ο συνεργάτης που Ζ."
+    good: "Δύο διαφορετικές αποχρώσεις, ή τρία ανισομερή στοιχεία, ή απλή δήλωση χωρίς λίστα."
+    context: "Listicle tricolon με slot-filling είναι AI-generated. Pop-psych post κλισέ. Παράγεται σε κάθε motivational caption."
+    registers: [all]
+
+  - id: ai-slop-triple-stack
+    category: ai_slop
+    bad: "σταθερή, επίμονη και προσεκτική (επίθετα) / αλλοιωθεί, αναμειχθεί ή χαλάσει (ρήματα)"
+    good: "Δύο διαφορετικές αποχρώσεις OK. Τρία συνώνυμα στη σειρά είναι padding. Διάλεξε ένα ακριβές."
+    context: |
+      Stack συνωνύμων (επιθέτων ή ρημάτων) είναι AI fluency tic. Συνήθως
+      υπάρχει ΕΝΑ ρήμα/επίθετο ακριβείας («νοθευτεί» αντί
+      «αλλοιωθεί/αναμειχθεί/χαλάσει»).
+    registers: [all]
+
+  - id: ai-slop-therapy-speak
+    category: ai_slop
+    bad: "η αλήθεια που ζει μέσα μας / το πιο εσωτερικό μέρος του εαυτού μας / συνήθεια που έχει γίνει ανάγκη"
+    good: "Πες ευθέως τι εννοείς. Η ψευδο-βαθιά διατύπωση δεν προσθέτει νόημα."
+    context: "Therapy-speak/pseudo-deep φράσεις: ηχούν βαθιές, σημαίνουν τίποτα. AI-generated λεξιλόγιο coaching."
+    registers: [all]
+
+  - id: ai-slop-fake-poetic-metaphor
+    category: ai_slop
+    bad: "η σκέψη που μένει με την πόρτα κλειστή / το πυροτέχνημα της στιγμής που σε στραγγίζει"
+    good: "Πραγματικές ελληνικές εικόνες (αν χρειάζονται) ή πεζή γλώσσα. Δεν εφευρίσκεις ποίηση."
+    context: "Όταν η μεταφορά δεν αντιστοιχεί σε ελληνική εικονογραφία/ιδιωματισμό, είναι AI slop ντυμένο ως ποίηση."
+    registers: [all]
+
+  - id: ai-slop-instagram-therapist-hook
+    category: ai_slop
+    bad: "Σε αφήνουν άδειο. Αυτό λέγεται Χ."
+    good: "Άρχισε με συγκεκριμένη σκηνή ή ερώτηση που δεν είναι clickbait."
+    context: "Instagram-therapist hooks είναι φόρμα clickbait. Πάντα νιώθει manipulative."
+    registers: [all]
+
+  - id: ai-slop-empty-marketing-claims
+    category: ai_slop
+    bad: "καθαρές και απλές εξηγήσεις / εξαιρετική ποιότητα / μοναδική εμπειρία / αξέχαστη εμπειρία"
+    good: "Συγκεκριμένος ισχυρισμός ή κόψε τη φράση."
+    context: "Κενά marketing claims. Αν δεν λες κάτι ακριβές, μην το πεις."
+    registers: [marketing, casual]
+
+  - id: ai-slop-anthropomorphic-things-want
+    category: ai_slop
+    bad: "Υπάρχουν πράγματα που (δεν) θέλουν Χ. Θέλουν Υ."
+    good: "Κάποια πράγματα έχουν αξία μόνο όταν Χ. / Δεν χρειάζεται κάθε Χ να Υ."
+    english_source: "Translated meme English"
+    context: "Στα ελληνικά τα αντικείμενα δεν θέλουν. Άνθρωποι θέλουν, αντικείμενα είναι ή έχουν."
+    registers: [marketing, casual]
+
+  - id: ai-slop-citation-references
+    category: ai_slop
+    bad: "([Βικιλεξικό][1]) / (Μπαμπινιώτης 1998) / (πηγή: ΛΚΝ)"
+    good: "[αφαίρεση: παραπομπές μόνο σε ακαδημαϊκό/νομικό κείμενο]"
+    context: "AI hallucinated citations. Σε TikTok/marketing/casual ποτέ. Κάνει το κείμενο να φαίνεται σαν web research paste-job."
+    registers: [casual, marketing]
+
+  - id: ai-slop-passive-listicle
+    category: ai_slop
+    bad: "Μπορεί να είναι Χ, αλλά και Υ, Ζ ή Α."
+    good: "Λέμε για Χ, αλλά και για έναν Υ ή μια Ζ που..."
+    context: "Παθητική «μπορεί να είναι» + flat 4-item listicle. Φυσική ελληνική: ενεργητικό «λέμε για...», 2-3 στοιχεία με μεταβολή άρθρων."
+    registers: [marketing, casual]
+
+  - id: filler-omos-empty-pivot
+    category: filler
+    bad: "Τι σημαίνει, όμως, στην πράξη;"
+    good: "Τι σημαίνει στην πράξη;"
+    context: "«Όμως» δημιουργεί ψεύτικη αντίθεση. Όταν δεν υπάρχει, ο σύνδεσμος είναι κενό συνδετικό υλικό."
+    registers: [all]
+
+  # ─── HIGH-SIGNAL CALQUES (translated idioms) ───────────────────────────
+
+  - id: calque-makes-sense
+    category: calque
+    bad: "έχει νόημα (όταν εννοείς 'is logical')"
+    good: "βγάζει νόημα / στέκει / είναι λογικό"
+    english_source: "it makes sense"
+    context: "«Έχει νόημα» = 'has meaning/purpose' (σωστό σε «η ζωή έχει νόημα»). Για 'makes sense' χρησιμοποίησε «βγάζει νόημα» ή «στέκει»."
+    registers: [all]
+
+  - id: calque-take-care-of
+    category: calque
+    bad: "πάρε φροντίδα"
+    good: "θα το φροντίσω / θα το αναλάβω / θα το κανονίσω"
+    english_source: "take care of it"
+    registers: [all]
+
+  - id: calque-make-a-decision
+    category: calque
+    bad: "κάνω μια απόφαση"
+    good: "παίρνω μια απόφαση"
+    english_source: "make a decision"
+    context: "Greek takes decisions, doesn't make them."
+    registers: [all]
+
+  - id: calque-let-me-know
+    category: calque
+    bad: "άσε με να ξέρω"
+    good: "πες μου / ενημέρωσέ με"
+    english_source: "let me know"
+    registers: [all]
+
+  - id: calque-feel-free
+    category: calque
+    bad: "νιώστε ελεύθεροι"
+    good: "μη διστάσετε / είστε ευπρόσδεκτοι"
+    english_source: "feel free to"
+    registers: [business, formal]
+
+  - id: calque-keep-in-mind
+    category: calque
+    bad: "κράτα στο μυαλό"
+    good: "να έχεις υπόψη / θυμήσου ότι"
+    english_source: "keep in mind"
+    registers: [all]
+
+  - id: calque-at-end-of-day
+    category: calque
+    bad: "στο τέλος της ημέρας"
+    good: "εν τέλει / τελικά / στην τελική"
+    english_source: "at the end of the day"
+    context: "«Στο τέλος της ημέρας» είναι κυριολεκτικό time-of-day. Ο ιδιωματισμός θέλει «εν τέλει» ή «τελικά»."
+    registers: [all]
+
+  - id: calque-make-sure
+    category: calque
+    bad: "κάνε σίγουρο"
+    good: "βεβαιώσου / φρόντισε / σιγουρέψου"
+    english_source: "make sure"
+    registers: [all]
+
+  - id: calque-next-level
+    category: calque
+    bad: "ανεβάστε την επιχείρησή σας στο επόμενο επίπεδο / πάμε στο επόμενο επίπεδο"
+    good: "μεγαλώστε / εξελιχθείτε / κάντε το επόμενο βήμα / [κόψτε το και πείτε τι ακριβώς προσφέρετε]"
+    english_source: "take it to the next level"
+    context: "Στα ελληνικά «επόμενο επίπεδο» δεν είναι ιδιωματικό σε επαγγελματική εξέλιξη: ηχεί video game."
+    registers: [marketing, business]
+
+  - id: calque-deal-close
+    category: calque
+    bad: "η συμφωνία θα κλείσει / κλείνουμε τη συμφωνία"
+    good: "η συμφωνία θα οριστικοποιηθεί / θα ολοκληρωθεί / θα υπογραφεί"
+    english_source: "to close a deal"
+    registers: [business, formal]
+
+  - id: calque-i-hope-this-finds-you-well
+    category: calque
+    bad: "Ελπίζω αυτό το μήνυμα σας βρίσκει καλά"
+    good: "[αφαίρεση: Greek emails δεν ανοίγουν έτσι]"
+    english_source: "I hope this email finds you well"
+    context: "Greek emails ξεκινούν με «Καλημέρα σας», «Γεια σας», ή κατευθείαν με το θέμα."
+    registers: [business, formal]
+
+  - id: calque-do-not-hesitate
+    category: calque
+    bad: "Παρακαλώ μη διστάσετε να επικοινωνήσετε"
+    good: "Είμαστε στη διάθεσή σας / Επικοινωνήστε μαζί μας για οτιδήποτε"
+    english_source: "Don't hesitate to reach out"
+    registers: [business]
+
+  # ─── GREEKLISH ORTHOGRAPHY ──────────────────────────────────────────────
+
+  - id: punct-na-pou-pws-tonal
+    category: punctuation
+    bad: "Θέλω νά πάω / Λέει πώς θα έρθει / Ο άνθρωπος πού ήρθε χθες"
+    good: "Θέλω να πάω / Λέει πως θα έρθει / Ο άνθρωπος που ήρθε χθες"
+    context: |
+      Διορθώνεις σιωπηλά. Το «να» (μόριο υποτακτικής) χωρίς τόνο.
+      Το «πού/πώς» μόνο όταν είναι ερωτηματικά. Το «που/πως» όταν
+      είναι αναφορικό/συνδετικό. AI/Greeklish-influenced σφάλμα.
+    registers: [all]
+
+  # ─── META-LANGUAGE (όταν περιγράφεις τη δουλειά σου στον χρήστη) ──────
+
+  - id: meta-untranslated-tech-terms
+    category: meta-language
+    bad: "pattern / harness / skill / load / run / process / pipeline (αμετάφραστα μέσα σε ελληνική πρόταση)"
+    good: "μοτίβο / σύστημα / οδηγίες·εργαλείο / διαβάζω / κάνω·εφαρμόζω / επεξεργάζομαι / διαδικασία·ακολουθία"
+    context: "Όταν περιγράφεις τη δουλειά σου στα ελληνικά, μην αφήνεις τεχνικούς αγγλικούς όρους. Όλοι έχουν φυσικά ελληνικά αντίστοιχα."
+    registers: [meta]
+
+  - id: meta-katharizo-keimeno
+    category: meta-language
+    bad: "καθαρίζω / καθάρισμα / καθαρισμένο (όταν αναφέρεται σε κείμενο)"
+    good: "επιμελούμαι / επιμέλεια / επιμελημένο / διορθώνω / ξαναδουλεύω"
+    context: "Στα ελληνικά «καθαρίζω» αφορά επιφάνειες, όχι κείμενα. Για κείμενο: «επιμελούμαι», «διορθώνω», «ξαναδουλεύω»."
+    registers: [meta]

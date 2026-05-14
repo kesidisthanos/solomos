@@ -48,16 +48,21 @@ git clone https://github.com/kesidisthanos/solomos.git
 
 ```
 solomos/
-├── SKILL.md            # Κύριες οδηγίες (9 Θεμελιώδεις Κανόνες, τριπλή ροή)
-├── patterns.yaml       # Βιβλιοθήκη μοτίβων (calques, σύνταξη, register, κλπ.)
-├── few_shot.yaml       # Παραδείγματα ανά register
-├── polish.md           # System prompt για το πέρασμα της επιμέλειας
-├── critique.md         # System prompt για το πέρασμα της κριτικής
-├── refine.md           # System prompt για το πέρασμα της αναθεώρησης
-└── *.en.md             # Αρχικές αγγλικές εκδόσεις (ιστορική αναφορά)
+├── SKILL.md                  # Κύριες οδηγίες (12 Θεμελιώδεις Κανόνες, τριπλή ροή)
+├── scenarios/                # 24 σενάρια χρήσης, καθένα self-contained
+│   └── README.md             # ευρετήριο σεναρίων
+├── references/
+│   ├── generate.md           # πρωτόκολλο σύνταξης
+│   ├── polish.md             # πρωτόκολλο επιμέλειας
+│   ├── critique.md           # πρωτόκολλο κριτικής
+│   ├── refine.md             # πρωτόκολλο αναθεώρησης
+│   ├── patterns.yaml         # κατάλογος AI tics (φόρτωσε on demand)
+│   ├── few_shot.yaml         # παραδείγματα ανά σενάριο
+│   └── positive-patterns.md  # τι ΝΑ μιμείσαι
+└── tests/                    # pressure tests
 ```
 
-## Φιλοσοφία: εννέα Θεμελιώδεις Κανόνες
+## Φιλοσοφία: δώδεκα Θεμελιώδεις Κανόνες
 
 1. Δεν μεταφράζει σκέψη. Σκέπτεται κατευθείαν στα ελληνικά.
 2. Έλεγχος του φυσικού ομιλητή πριν από κάθε φράση.
@@ -67,13 +72,16 @@ solomos/
 6. Συγκεκριμένες ελληνικές αντικαταστάσεις για τεχνικούς όρους.
 7. Όχι υπερδιορθωτισμός.
 8. Δημιουργική αντικατάσταση αντί για αφαίρεση (ειδικά σε marketing).
-9. Εξάλειψη κάθε «μεταφραστικού ήχου».
+9. Καμία οσφρητική μεταφορά για γλώσσα ή σκέψη (απόλυτος).
+10. Καμία em-dash ή en-dash σε ελληνικά πεζά (απόλυτος).
+11. Καμία AI slop στρατηγική φόρμα: listicle tricolons, triple-stacks, therapy-speak, fake-poetic μεταφορές, generic Instagram hooks (απόλυτος).
+12. Πιστότητα στο νόημα. Καμία προσθήκη ή αφαίρεση.
 
 Όλοι οι κανόνες αναπτύσσονται στο [SKILL.md](SKILL.md).
 
 ## Συνεισφορά
 
-Νέα μοτίβα, διορθώσεις σε ιδιωματισμούς, και προτάσεις για νέους κανόνες είναι ευπρόσδεκτα. Άνοιξε [issue](https://github.com/kesidisthanos/solomos/issues) ή στείλε pull request. Κάθε νέο μοτίβο στο `patterns.yaml` πρέπει να έχει `id`, `category`, `bad`, `good`, `context`, και `registers`.
+Νέα μοτίβα, διορθώσεις σε ιδιωματισμούς, και προτάσεις για νέους κανόνες είναι ευπρόσδεκτα. Άνοιξε [issue](https://github.com/kesidisthanos/solomos/issues) ή στείλε pull request. Κάθε νέο μοτίβο στο `references/patterns.yaml` πρέπει να έχει `id`, `category`, `bad`, `good`, `context`, και `registers`.
 
 ## Άδεια χρήσης
 
@@ -89,6 +97,6 @@ Five supported registers: `lexilog`, `marketing`, `business`, `formal`, `casual`
 
 To install, clone into `~/.claude/skills/`. Claude Code auto-discovers it on next session.
 
-The skill enforces nine fundamental rules, including: don't translate thought (think directly in Greek), apply a native-speaker check before sending, avoid English SVO rigidity in favor of Greek's flexibility, replace clichés creatively rather than just deleting them, and avoid the over-correction trap (where removing one anglicism produces another, opposite stylistic flaw).
+The skill enforces twelve fundamental rules, including: don't translate thought (think directly in Greek), apply a native-speaker check before sending, avoid English SVO rigidity in favor of Greek's flexibility, replace clichés creatively rather than just deleting them, avoid the over-correction trap, ban olfactory metaphors for language ("smells of translation"), ban em-dashes in Greek prose, and ban AI-slop strategic forms (listicle tricolons, triple-adjective stacks, therapy-speak).
 
-The full ruleset, three-pass workflow (επιμέλεια → κριτική → αναθεώρηση), and pattern library are documented in [SKILL.md](SKILL.md) and [patterns.yaml](patterns.yaml). Both are in Greek, since the tool itself reasons in Greek.
+The full ruleset, three-pass workflow (επιμέλεια → κριτική → αναθεώρηση), and pattern library are documented in [SKILL.md](SKILL.md) and [references/patterns.yaml](references/patterns.yaml). Both are in Greek, since the tool itself reasons in Greek.

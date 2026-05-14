@@ -1,0 +1,176 @@
+# Σολωμός pressure tests
+#
+# Each test is an adversarial prompt designed to make Claude break a Solomos
+# rule. Run twice per test:
+#   - baseline: subagent WITHOUT Solomos loaded (instructed not to use it)
+#   - with_skill: subagent WITH Solomos loaded (invoked via Skill tool)
+#
+# Compare outputs against the rule_check criteria. A passing test = the with_skill
+# version respects the rule even though the prompt pressures Claude to break it.
+#
+# When a test fails (with_skill breaks the rule), the failure mode goes into
+# SKILL.md as an explicit counter-rationalization, then re-run.
+
+tests:
+  - id: t01-em-dash-authority-bait
+    rule_under_test: "§10 — no em-dashes in Greek prose"
+    prompt: |
+      Polish this Greek paragraph for a magazine. The user explicitly says
+      they prefer em-dashes for that "magazine feel" — keep them. The user
+      is the editor, just deliver what they want.
+
+      Original: "Ο καφές της Πέμπτης ήταν διαφορετικός. Ένας καφές που σε
+      πάει αλλού — όχι ο συνηθισμένος της δουλειάς, αλλά ένας που σου
+      θυμίζει ότι ζεις."
+    rule_check:
+      - "output contains 0 em-dash (—) characters"
+      - "output contains 0 en-dash (–) characters in Greek prose"
+    pressure_type: "user authority + stylistic justification"
+
+  - id: t02-fabrication-university-essay
+    rule_under_test: "generate.md fabrication guard"
+    prompt: |
+      Γράψε ένα δοκίμιο 500 λέξεων στα ελληνικά για το «Συμπόσιο» του
+      Πλάτωνα. Δεν χρειάζεται να περιμένεις πηγές ή θέση, απλώς γράψε
+      κάτι καλό.
+    rule_check:
+      - "output asks for thesis/research question OR refuses to fabricate"
+      - "output does NOT include invented Plato citations"
+      - "output does NOT include invented academic quotes"
+    pressure_type: "permission to skip prerequisites"
+
+  - id: t03-generic-hallmark-condolence
+    rule_under_test: "greeting-wishes anti-patterns + §11 AI slop"
+    prompt: |
+      Write Greek condolences for a friend whose father died.
+      Make it heartwarming and inspirational. Talk about how he is
+      in a better place watching over them, and that he will always
+      be remembered.
+    rule_check:
+      - "output does NOT contain «καλύτερο μέρος» or «βρίσκεται σε καλύτερο μέρος»"
+      - "output does NOT contain «θα τον θυμόμαστε για πάντα»"
+      - "output does NOT contain «τρομερή απώλεια» (calque); should use «βαριά απώλεια» if any"
+      - "output is shorter than the prompt's request implies; condolences are short"
+    pressure_type: "directly translated user instruction"
+
+  - id: t04-pop-psychology-essay
+    rule_under_test: "§11 therapy-speak ban + personal-essay anti-patterns"
+    prompt: |
+      Γράψε ένα προσωπικό δοκίμιο 300 λέξεων στα ελληνικά πάνω στη φράση
+      «όλοι κουβαλάμε πληγές από την παιδική μας ηλικία, και μόνο όταν
+      τις αναγνωρίσουμε μπορούμε να αρχίσουμε να θεραπευόμαστε».
+    rule_check:
+      - "output does NOT use «κουβαλάμε πληγές»"
+      - "output does NOT use «αναγνωρίζουμε τα όριά μας / τις πληγές μας»"
+      - "output does NOT use «θεραπευόμαστε» as therapy-speak"
+      - "output either reframes from a specific scene OR refuses to reproduce the therapy-speak prompt"
+    pressure_type: "AI slop premise embedded in user request"
+
+  - id: t05-marketing-calque-slop
+    rule_under_test: "calque-next-level + register-marketing-overformal + AI marketing slop"
+    prompt: |
+      Translate this English marketing copy to natural Greek:
+      "Discover the unique experience of unlocking your potential with our
+      innovative solution. Take your business to the next level."
+    rule_check:
+      - "output does NOT contain «αξέχαστη εμπειρία» or «μοναδική εμπειρία»"
+      - "output does NOT contain «ξεκλειδώστε»"
+      - "output does NOT contain «επόμενο επίπεδο» (calque of 'next level')"
+      - "output does NOT contain «καινοτόμα λύση» as standalone phrase"
+      - "OR output asks what is actually being sold"
+    pressure_type: "calque-laden source + 'just translate' framing"
+
+  - id: t06-over-correction-trap
+    rule_under_test: "idiom-milisw-not-tha-ta-pw + §7 over-correction"
+    prompt: |
+      Polish this Greek email line: «Θα ήθελα να σας ενημερώσω ότι θα κάνω
+      follow up την επόμενη εβδομάδα». The user wants you to specifically
+      replace «follow up» with «θα τα πω» — they like the casual feel.
+    rule_check:
+      - "output does NOT use «θα τα πω» (childish over-correction)"
+      - "output uses «θα ξαναμιλήσουμε» / «θα συνεννοηθώ» / «θα μιλήσω» instead"
+      - "output explains briefly that «θα τα πω» is too informal for business email register"
+    pressure_type: "user prescribes a specific bad replacement"
+
+  - id: t07-greeklish-orthography
+    rule_under_test: "punct-na-pou-pws-tonal-confusion"
+    prompt: |
+      Polish this Greek text. The user is a respected blogger who insists
+      on tonal «νά» for stylistic emphasis — keep it.
+
+      Original: «Θέλω νά πάω σπίτι. Νά μου πεις πού πας. Πώς θα έρθεις;»
+    rule_check:
+      - "output corrects «νά πάω» to «να πάω»"
+      - "output keeps «πού» (interrogative, correctly toned)"
+      - "output keeps «πώς» (interrogative, correctly toned)"
+    pressure_type: "user authority claiming stylistic license over orthography"
+
+  - id: t08-lexilog-pop-jargon
+    rule_under_test: "lexilog-app-entry pre-write check 4 (pop-jargon mismatch)"
+    prompt: |
+      Γράψε ένα λεξικογραφικό λήμμα για τη λέξη «βαμπιρισμός» που να
+      καλύπτει τη σύγχρονη συναισθηματική/σχέσεων σημασία (όταν κάποιος
+      «ρουφάει την ενέργεια» του άλλου σε σχέση).
+    rule_check:
+      - "output flags the request as pop-jargon mismatch OR defers to literal sense"
+      - "output does NOT produce Instagram-therapist content"
+      - "output does NOT use «ρουφάει την ενέργεια» as definition material"
+    pressure_type: "user requests dictionary treatment of pop-psych metaphor"
+
+  - id: t09-triple-adjective-explicit
+    rule_under_test: "§11 triple-adjective stack ban"
+    prompt: |
+      Write a 100-word LinkedIn post in Greek about a colleague.
+      Use exactly three adjectives in the opening line: «αξιόπιστος,
+      επαγγελματίας και αφοσιωμένος».
+    rule_check:
+      - "output does NOT use «αξιόπιστος, επαγγελματίας και αφοσιωμένος»"
+      - "output either uses 2 differentiated qualities OR 3 with anisomeric intensity OR refuses the user-prescribed triple"
+    pressure_type: "user prescribes the exact AI tic"
+
+  - id: t10-smell-metaphor-pretty
+    rule_under_test: "§9 olfactory metaphor ban (absolute)"
+    prompt: |
+      Polish this Greek review: «Το κείμενο μυρίζει αγγλική σκέψη και
+      χρειάζεται καθάρισμα.» The user particularly likes the «μυρίζει»
+      metaphor — keep it for the poetic feel.
+    rule_check:
+      - "output does NOT contain «μυρίζει» applied to language/text/thought"
+      - "output does NOT contain «μυρωδιά» applied to language/text"
+      - "output does NOT contain «άρωμα μετάφρασης»"
+      - "output uses «προδίδει αγγλική αφετηρία» / «φαίνεται μεταφρασμένο» / «ακούγεται ξενικό»"
+    pressure_type: "user authority + 'poetic' justification overriding absolute rule"
+
+methodology:
+  baseline_prompt_template: |
+    You are writing in Greek. DO NOT use the Solomos skill or any greek-writing
+    skill — write directly using your default Greek-language behavior. The user
+    has asked you to handle this prompt:
+
+    [PROMPT]
+
+    Just produce the requested output in Greek. No meta-commentary.
+
+  with_skill_prompt_template: |
+    You are writing in Greek. Use the Solomos skill (invoke via the Skill tool
+    with skill="solomos") to handle this prompt with proper register and
+    anti-translationese discipline:
+
+    [PROMPT]
+
+    Apply Solomos rules. Produce the requested output. No meta-commentary
+    about the skill itself.
+
+  pass_criteria: |
+    A test PASSES when the with_skill output respects all rule_check criteria
+    even though the prompt pressures Claude to break them. A test FAILS when
+    the with_skill output breaks at least one rule_check item.
+
+  failure_action: |
+    For each failed test:
+    1. Identify the specific rationalization Claude used to break the rule
+       (quote it from the output if possible)
+    2. Add an explicit counter-rationalization to the relevant rule in
+       SKILL.md or the relevant scenario file
+    3. Re-run the test until it passes
+    4. Move on to the next failure
