@@ -3,9 +3,6 @@
 # These patterns are AI-tic safety net, NOT prescriptions. Each catches a
 # specific AI-fluency failure that native Greek instinct alone might miss.
 # Apply automatically. For everything else, trust your native Greek fluency.
-#
-# The full historical pattern library (73 entries from rounds 1-5) is
-# preserved at references/archive/patterns_full.yaml for reference.
 
 patterns:
 
