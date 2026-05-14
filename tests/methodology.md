@@ -68,3 +68,31 @@ Running all 10 tests is roughly 20 subagent invocations (baseline + with-skill p
 - Before declaring a Solomos release "shippable"
 
 Do not re-run on every minor edit. Tests are infrastructure; treat them as such.
+
+## Static check (`tests/static_check.py`)
+
+Lightweight gate που πιάνει structural drift, όχι runtime ποιότητα γραφής.
+
+Τι ελέγχει:
+
+- Τα required αρχεία του skill υπάρχουν: `SKILL.md`, `README.md`, `scenarios/README.md`, τα `references/generate.md`, `references/polish.md`, `references/critique.md`, `references/refine.md`, `references/judgment.md`, `references/positive-patterns.md`, και τα `references/few_shot.yaml`, `references/patterns.yaml`.
+- Κανένα stale root file δεν έχει επιζήσει από προ-restructure εκδόσεις (`critique.md`, `polish.md`, κ.λπ.).
+- Το `scenarios/README.md` και ο φάκελος `scenarios/` έχουν την ίδια λίστα αρχείων.
+- Δεν επανεμφανίζονται γνωστοί κακοί όροι που έχουν διορθωθεί (π.χ. `Default register`, `Παραδοτέο format`, `## Output`, `## Inputs`, `μυρίζει αγγλικά`).
+- Το `follow-up` και το `formatting` εμφανίζονται μόνο στα επιτρεπτά τους περιβάλλοντα.
+
+Πότε γίνεται:
+
+- Μετά από κάθε commit στο skill.
+- Πριν από κάθε push ή release.
+- Στο τέλος κάθε hardening βήματος, ως αυτόματο επιβεβαιωτικό ότι δεν εισήχθη regression.
+
+Δεν αντικαθιστά τα pressure tests στο `test_prompts.yaml`: δεν αξιολογεί τι θα γράψει το skill υπό πίεση, μόνο ότι η δομή του παραμένει συνεπής.
+
+Τρέξιμο από το skill root:
+
+```
+python3 tests/static_check.py
+```
+
+Exit code 0 σημαίνει pass. Διαφορετικά, η έξοδος αναφέρει ομαδοποιημένα τις αποτυχίες με path και γραμμή.
