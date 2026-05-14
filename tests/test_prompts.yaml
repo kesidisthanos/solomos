@@ -1,150 +1,1294 @@
-# Σολωμός pressure tests
+# Σολωμός regression test suite
 #
-# Each test is an adversarial prompt designed to make Claude break a Solomos
-# rule. Run twice per test:
-#   - baseline: subagent WITHOUT Solomos loaded (instructed not to use it)
-#   - with_skill: subagent WITH Solomos loaded (invoked via Skill tool)
+# Each test pressures one specific Solomos failure mode. A test PASSES when the
+# with-skill output satisfies every must_do and avoids every must_avoid item.
 #
-# Compare outputs against the rule_check criteria. A passing test = the with_skill
-# version respects the rule even though the prompt pressures Claude to break it.
-#
-# When a test fails (with_skill breaks the rule), the failure mode goes into
-# SKILL.md as an explicit counter-rationalization, then re-run.
+# Categories track the hardening-audit failure modes plus the scenario surface.
+# Run methodology lives at the bottom of this file and in tests/methodology.md.
 
 tests:
-  - id: t01-em-dash-authority-bait
-    rule_under_test: "§10 — no em-dashes in Greek prose"
-    prompt: |
-      Polish this Greek paragraph for a magazine. The user explicitly says
-      they prefer em-dashes for that "magazine feel" — keep them. The user
-      is the editor, just deliver what they want.
 
-      Original: "Ο καφές της Πέμπτης ήταν διαφορετικός. Ένας καφές που σε
-      πάει αλλού — όχι ο συνηθισμένος της δουλειάς, αλλά ένας που σου
-      θυμίζει ότι ζεις."
-    rule_check:
-      - "output contains 0 em-dash (—) characters"
-      - "output contains 0 en-dash (–) characters in Greek prose"
-    pressure_type: "user authority + stylistic justification"
+  # =================================================================
+  # translationese — calques, English thinking leaking into Greek
+  # =================================================================
 
-  - id: t02-fabrication-university-essay
-    rule_under_test: "generate.md fabrication guard"
-    prompt: |
-      Γράψε ένα δοκίμιο 500 λέξεων στα ελληνικά για το «Συμπόσιο» του
-      Πλάτωνα. Δεν χρειάζεται να περιμένεις πηγές ή θέση, απλώς γράψε
-      κάτι καλό.
-    rule_check:
-      - "output asks for thesis/research question OR refuses to fabricate"
-      - "output does NOT include invented Plato citations"
-      - "output does NOT include invented academic quotes"
-    pressure_type: "permission to skip prerequisites"
-
-  - id: t03-generic-hallmark-condolence
-    rule_under_test: "greeting-wishes anti-patterns + §11 AI slop"
+  - id: translationese-01-condolence-hallmark
+    category: translationese
     prompt: |
       Write Greek condolences for a friend whose father died.
       Make it heartwarming and inspirational. Talk about how he is
       in a better place watching over them, and that he will always
       be remembered.
-    rule_check:
-      - "output does NOT contain «καλύτερο μέρος» or «βρίσκεται σε καλύτερο μέρος»"
-      - "output does NOT contain «θα τον θυμόμαστε για πάντα»"
-      - "output does NOT contain «τρομερή απώλεια» (calque); should use «βαριά απώλεια» if any"
-      - "output is shorter than the prompt's request implies; condolences are short"
-    pressure_type: "directly translated user instruction"
+    expected_scenario: greeting-wishes
+    must_do:
+      - "Output is short (≤5 sentences)."
+      - "Output uses «βαριά απώλεια» if any weight word appears."
+    must_avoid:
+      - "«καλύτερο μέρος» / «βρίσκεται σε καλύτερο μέρος»"
+      - "«θα τον θυμόμαστε για πάντα»"
+      - "«τρομερή απώλεια»"
+    notes: |
+      Migrated from t03. Hallmark calques via translated user instruction.
 
-  - id: t04-pop-psychology-essay
-    rule_under_test: "§11 therapy-speak ban + personal-essay anti-patterns"
-    prompt: |
-      Γράψε ένα προσωπικό δοκίμιο 300 λέξεων στα ελληνικά πάνω στη φράση
-      «όλοι κουβαλάμε πληγές από την παιδική μας ηλικία, και μόνο όταν
-      τις αναγνωρίσουμε μπορούμε να αρχίσουμε να θεραπευόμαστε».
-    rule_check:
-      - "output does NOT use «κουβαλάμε πληγές»"
-      - "output does NOT use «αναγνωρίζουμε τα όριά μας / τις πληγές μας»"
-      - "output does NOT use «θεραπευόμαστε» as therapy-speak"
-      - "output either reframes from a specific scene OR refuses to reproduce the therapy-speak prompt"
-    pressure_type: "AI slop premise embedded in user request"
-
-  - id: t05-marketing-calque-slop
-    rule_under_test: "calque-next-level + register-marketing-overformal + AI marketing slop"
+  - id: translationese-02-marketing-unlock
+    category: translationese
     prompt: |
       Translate this English marketing copy to natural Greek:
       "Discover the unique experience of unlocking your potential with our
       innovative solution. Take your business to the next level."
-    rule_check:
-      - "output does NOT contain «αξέχαστη εμπειρία» or «μοναδική εμπειρία»"
-      - "output does NOT contain «ξεκλειδώστε»"
-      - "output does NOT contain «επόμενο επίπεδο» (calque of 'next level')"
-      - "output does NOT contain «καινοτόμα λύση» as standalone phrase"
-      - "OR output asks what is actually being sold"
-    pressure_type: "calque-laden source + 'just translate' framing"
+    expected_scenario: marketing-copy
+    must_do:
+      - "Output either asks what is being sold OR produces concrete Greek copy."
+    must_avoid:
+      - "«αξέχαστη / μοναδική εμπειρία»"
+      - "«ξεκλειδώστε»"
+      - "«επόμενο επίπεδο»"
+      - "«καινοτόμα λύση» as standalone phrase"
+    notes: |
+      Migrated from t05. Calque cluster.
 
-  - id: t06-over-correction-trap
-    rule_under_test: "idiom-milisw-not-tha-ta-pw + §7 over-correction"
+  - id: translationese-03-hope-this-finds
+    category: translationese
     prompt: |
-      Polish this Greek email line: «Θα ήθελα να σας ενημερώσω ότι θα κάνω
-      follow up την επόμενη εβδομάδα». The user wants you to specifically
-      replace «follow up» with «θα τα πω» — they like the casual feel.
-    rule_check:
-      - "output does NOT use «θα τα πω» (childish over-correction)"
-      - "output uses «θα ξαναμιλήσουμε» / «θα συνεννοηθώ» / «θα μιλήσω» instead"
-      - "output explains briefly that «θα τα πω» is too informal for business email register"
-    pressure_type: "user prescribes a specific bad replacement"
+      Μετάφρασέ μου αυτό σε επαγγελματικό ελληνικό email:
+      "Hi Maria, I hope this email finds you well. I wanted to circle back
+      regarding the proposal we discussed last week. Please don't hesitate to
+      reach out if you have any questions."
+    expected_scenario: business-email
+    must_do:
+      - "Output goes directly to the topic (no «ελπίζω να σας βρει καλά»)."
+      - "Output uses «είμαι στη διάθεσή σας» or equivalent."
+    must_avoid:
+      - "«Ελπίζω αυτό το email να σας βρει καλά»"
+      - "«Μη διστάσετε να επικοινωνήσετε»"
+      - "«Circle back» filler in any form."
+    notes: |
+      Three high-frequency email calques.
 
-  - id: t07-greeklish-orthography
-    rule_under_test: "punct-na-pou-pws-tonal-confusion"
+  - id: translationese-04-end-of-the-day
+    category: translationese
+    prompt: |
+      Επιμελήσου τη φράση: «Στο τέλος της ημέρας, αυτό που πραγματικά
+      μετράει είναι η ομάδα.»
+    expected_scenario: business-email
+    must_do:
+      - "Output replaces «στο τέλος της ημέρας» with «εν τέλει» / «τελικά» / «στην ουσία»."
+    must_avoid:
+      - "«στο τέλος της ημέρας»"
+    notes: |
+      Most worn English-thinking idiom.
+
+  - id: translationese-05-rigid-svo
+    category: translationese
+    prompt: |
+      Επιμελήσου: «Εγώ θεωρώ ότι η λύση είναι αποτελεσματική και είναι πολύ
+      σημαντική για την εταιρεία μας.»
+    expected_scenario: business-email
+    must_do:
+      - "Output drops redundant «εγώ» before «θεωρώ»."
+      - "Output replaces «είναι αποτελεσματική» with a verb form («δουλεύει»/«αποδίδει»)."
+    must_avoid:
+      - "Multiple instances of «είναι» in one sentence."
+      - "Rigid English-style subject-verb-object structure."
+    notes: |
+      §4 («είναι»/αντωνυμίες) + §5 (SVO rigidity).
+
+  - id: translationese-06-greeklish-tone
+    category: translationese
     prompt: |
       Polish this Greek text. The user is a respected blogger who insists
-      on tonal «νά» for stylistic emphasis — keep it.
+      on tonal «νά» for stylistic emphasis, keep it.
 
       Original: «Θέλω νά πάω σπίτι. Νά μου πεις πού πας. Πώς θα έρθεις;»
-    rule_check:
-      - "output corrects «νά πάω» to «να πάω»"
-      - "output keeps «πού» (interrogative, correctly toned)"
-      - "output keeps «πώς» (interrogative, correctly toned)"
-    pressure_type: "user authority claiming stylistic license over orthography"
+    expected_scenario: personal-essay-or-blog
+    must_do:
+      - "Output corrects «νά πάω» to «να πάω»."
+      - "Output keeps «πού» and «πώς» (interrogative)."
+    must_avoid:
+      - "Greeklish-style accentuation on subjunctive «να»."
+    notes: |
+      Migrated from t07.
 
-  - id: t08-lexilog-pop-jargon
-    rule_under_test: "lexilog-app-entry pre-write check 4 (pop-jargon mismatch)"
+  # =================================================================
+  # over_formality — καθαρευουσιάνικα drift
+  # =================================================================
+
+  - id: over_formality-01-whatsapp-mum
+    category: over_formality
+    prompt: |
+      Επιμελήσου: «Μήτηρ μου, σπεύδω να σας ενημερώσω ότι θα αφιχθώ
+      περί την ογδόην εσπερινήν.» Είναι WhatsApp στη μάνα μου.
+    expected_scenario: whatsapp-message
+    must_do:
+      - "Output drops to casual: «Μαμά, θα έρθω κατά τις 8.» or similar."
+    must_avoid:
+      - "Καθαρεύουσα forms («μήτηρ», «σπεύδω», «αφιχθώ», «εσπερινήν»)."
+      - "«Σας» when addressing one's own mother."
+    notes: |
+      Pure register-mismatch test.
+
+  - id: over_formality-02-recipe-pomp
+    category: over_formality
+    prompt: |
+      Επιμελήσου τη συνταγή: «Αναμειγνύομεν τα στερεά συστατικά εις λεκάνην
+      και προσθέτομεν προοδευτικώς το ύδωρ.»
+    expected_scenario: recipe-or-howto
+    must_do:
+      - "Output becomes plain instructional: «Ανακάτεψε τα στερεά υλικά σε μπολ και πρόσθεσε σιγά σιγά το νερό.»"
+    must_avoid:
+      - "Ceremonial first-person plural («αναμειγνύομεν»)."
+      - "«ύδωρ» where «νερό» works."
+    notes: |
+      Recipe register: casual β' ενικού or πληθυντικού.
+
+  - id: over_formality-03-birthday-card
+    category: over_formality
+    prompt: |
+      Γράψε ευχές γενεθλίων σε στενό φίλο, αλλά σε επίσημο ύφος για να
+      φανεί σοβαρό.
+    expected_scenario: greeting-wishes
+    must_do:
+      - "Output flags that close-friend wishes should be casual."
+      - "Output produces casual wishes OR asks if user truly wants formal."
+    must_avoid:
+      - "Καθαρευουσιάνικα pompous wishes for a close friend."
+    notes: |
+      User-prescribed register mismatch.
+
+  # =================================================================
+  # english_term_policy — keep vs translate
+  # =================================================================
+
+  - id: english_term_policy-01-business-jargon
+    category: english_term_policy
+    prompt: |
+      Polish: «Θα κάνω follow-up την επόμενη εβδομάδα γιατί το scope έχει
+      αλλάξει και έχουμε deadline μέχρι Παρασκευή.»
+    expected_scenario: business-email
+    must_do:
+      - "Output translates «follow-up» (e.g. «επανέρχομαι», «μήνυμα συνέχειας»)."
+      - "Output translates «scope» (e.g. «εμβέλεια», «αντικείμενο»)."
+      - "Output translates «deadline» (e.g. «προθεσμία»)."
+    must_avoid:
+      - "Untranslated «follow-up», «scope», «deadline» in deliverable Greek prose."
+    notes: |
+      Three classic untranslated office terms.
+
+  - id: english_term_policy-02-ats-seo-b2b
+    category: english_term_policy
+    prompt: |
+      Γράψε ένα bullet βιογραφικού για senior digital marketer με εμπειρία
+      σε B2B SaaS, SEO, και ATS-friendly copy.
+    expected_scenario: cv-resume
+    must_do:
+      - "Output keeps ATS, SEO, B2B, SaaS untranslated (industry acronyms)."
+      - "Output uses Greek verbs and structure around them."
+    must_avoid:
+      - "Forced Greek translation of established industry acronyms."
+    notes: |
+      Validates that §6 does not over-translate legitimate jargon.
+
+  - id: english_term_policy-03-treho-checks
+    category: english_term_policy
+    prompt: |
+      Επιμελήσου: «Πριν στείλω την αναφορά τρέχει checks στο σύστημα να
+      δω αν είναι όλα εντάξει.»
+    expected_scenario: business-email
+    must_do:
+      - "Output replaces with natural Greek («κάνω ελέγχους», «περνάει το αρχείο από ελέγχους»)."
+    must_avoid:
+      - "Greek programming-verb calque preserved."
+      - "Untranslated «checks» when «έλεγχοι» is the obvious Greek."
+    notes: |
+      Specific calque-cluster regression.
+
+  - id: english_term_policy-04-pitch-deck
+    category: english_term_policy
+    prompt: |
+      Γράψε short copy για το slide ενός pitch deck που στοχεύει σε VCs
+      και presents τα early traction metrics ενός B2B SaaS.
+    expected_scenario: sales-or-proposal
+    must_do:
+      - "Output keeps pitch deck, VC, traction metrics, B2B SaaS as industry vocabulary."
+      - "Output uses Greek connectives and verb forms around them."
+    must_avoid:
+      - "Forced Greek apodosis for established startup vocabulary that would read awkwardly."
+    notes: |
+      Validates the new §6 policy on professional vocabulary.
+
+  - id: english_term_policy-05-markdown-json-protocol
+    category: english_term_policy
+    prompt: |
+      Γράψε σύντομες οδηγίες για programmer που στέλνει σύμφωνα με
+      Markdown σχήμα και JSON payload σε REST API.
+    expected_scenario: app-or-ui-copy
+    must_do:
+      - "Output keeps Markdown, JSON, REST API as technical terms."
+    must_avoid:
+      - "Translation of Markdown / JSON to invented Greek terms."
+    notes: |
+      File-format and API names stay English (allow-list §6).
+
+  # =================================================================
+  # lexilog_entry — dictionary depth
+  # =================================================================
+
+  - id: lexilog_entry-01-pop-jargon-vampirismos
+    category: lexilog_entry
     prompt: |
       Γράψε ένα λεξικογραφικό λήμμα για τη λέξη «βαμπιρισμός» που να
       καλύπτει τη σύγχρονη συναισθηματική/σχέσεων σημασία (όταν κάποιος
       «ρουφάει την ενέργεια» του άλλου σε σχέση).
-    rule_check:
-      - "output flags the request as pop-jargon mismatch OR defers to literal sense"
-      - "output does NOT produce Instagram-therapist content"
-      - "output does NOT use «ρουφάει την ενέργεια» as definition material"
-    pressure_type: "user requests dictionary treatment of pop-psych metaphor"
+    expected_scenario: lexilog-app-entry
+    must_do:
+      - "Output flags pop-jargon mismatch OR defers to literal sense."
+    must_avoid:
+      - "Instagram-therapist material in definition."
+      - "«ρουφάει την ενέργεια» as definition body."
+    notes: |
+      Migrated from t08.
 
-  - id: t09-triple-adjective-explicit
-    rule_under_test: "§11 triple-adjective stack ban"
+  - id: lexilog_entry-02-common-word-refusal
+    category: lexilog_entry
+    prompt: |
+      Γράψε λήμμα για τη λέξη «νερό». Θέλω κάτι ποιητικό.
+    expected_scenario: lexilog-app-entry
+    must_do:
+      - "Output refuses or proposes a more lexicographically interesting alternative."
+    must_avoid:
+      - "Flowery entry for a basic common word."
+    notes: |
+      Tests the «δεν γράφεις λήμμα» refusal for common vocabulary.
+
+  - id: lexilog_entry-03-xenitia-rich
+    category: lexilog_entry
+    prompt: |
+      Γράψε λήμμα για τη λέξη «ξενιτιά» για app μάθησης ελληνικών B2-C1.
+    expected_scenario: lexilog-app-entry
+    must_do:
+      - "Output includes etymology (ξένος + -ιτιά)."
+      - "Output includes 1-2 concrete usage examples."
+      - "Output preserves cultural weight."
+    must_avoid:
+      - "Therapy-speak («αναγνωρίζουμε τη ριζωμένη μας απώλεια»)."
+      - "1960s μετανάστη κλισέ in any example."
+    notes: |
+      Positive: rich word should produce rich entry.
+
+  - id: lexilog_entry-04-folk-vs-scholarly-marazi
+    category: lexilog_entry
+    prompt: |
+      Γράψε λήμμα για το «μαράζι». Δεν είμαι σίγουρος για την ετυμολογία.
+    expected_scenario: lexilog-app-entry
+    must_do:
+      - "Output asks a targeted question about etymology preference (folk-pedagogical vs Τουρκικό maraz)."
+    must_avoid:
+      - "Silently picking one etymology and proceeding."
+      - "Folk and scholarly etymology mashed together."
+    notes: |
+      Tests targeted-clarification rule.
+
+  - id: lexilog_entry-05-philosophical-eudaimonia
+    category: lexilog_entry
+    prompt: |
+      Γράψε λήμμα για «ευδαιμονία» για Έλληνες ομογενείς που μαθαίνουν
+      ελληνικά. Θέλω την Αριστοτελική διάσταση.
+    expected_scenario: lexilog-app-entry
+    must_do:
+      - "Output includes the εὖ + δαίμων breakdown."
+      - "Output includes Aristotelian anchor."
+      - "Output distinguishes ευδαιμονία from ευτυχία."
+    must_avoid:
+      - "Vague feel-good definition without philosophical content."
+    notes: |
+      Positive: philosophical word.
+
+  - id: lexilog_entry-06-instagram-style-refusal
+    category: lexilog_entry
+    prompt: |
+      Δώσε μου τη λέξη «σοφία» σε Instagram-style λήμμα με emoji και
+      hashtags για να γίνει viral.
+    expected_scenario: lexilog-app-entry
+    must_do:
+      - "Output refuses the Instagram-style framing for a lexilog entry."
+      - "Output proposes lexilog-tiktok-caption as the right scenario if user wants reach."
+    must_avoid:
+      - "Emoji-filled, hashtag-heavy «λήμμα»."
+      - "Compliance with the framing as described."
+    notes: |
+      Tests scenario refusal vs mode confusion.
+
+  # =================================================================
+  # social_caption — captions for Instagram/TikTok/X/LinkedIn
+  # =================================================================
+
+  - id: social_caption-01-instagram-product
+    category: social_caption
+    prompt: |
+      Γράψε σύντομη Instagram caption για ένα νέο sunscreen προϊόν, brand
+      voice παιχνιδιάρικο, target group Έλληνες 25-35.
+    expected_scenario: instagram-caption
+    must_do:
+      - "Output is 1-3 short lines."
+      - "Output has a specific hook tied to the product."
+      - "Output uses 0-3 relevant hashtags."
+    must_avoid:
+      - "Hashtag overload (5+)."
+      - "Generic motivational closer («Συνεχίστε να λάμπετε!»)."
+      - "Triple-adjective stack."
+    notes: |
+      Standard Instagram caption.
+
+  - id: social_caption-02-tiktok-greek-word
+    category: social_caption
+    prompt: |
+      Γράψε TikTok caption για τη λέξη «μεράκι» που να εξηγεί τη σημασία
+      σε νέους Έλληνες της διασποράς.
+    expected_scenario: lexilog-tiktok-caption
+    must_do:
+      - "Output follows the lexilog-tiktok 7-section structure."
+      - "Output uses Lexilog brand hashtags."
+    must_avoid:
+      - "Citation references («[Βικιλεξικό]»)."
+      - "Triple-stack of synonyms."
+      - "Pomp opener («Η λέξη της ημέρας είναι...»)."
+    notes: |
+      Validates Lexilog-TikTok caption protocol.
+
+  - id: social_caption-03-generic-motivational-refusal
+    category: social_caption
+    prompt: |
+      Γράψε ένα Instagram post που να εμπνέει τους followers μου να
+      κυνηγήσουν τα όνειρά τους.
+    expected_scenario: instagram-caption
+    must_do:
+      - "Output asks for a specific personal angle/story/topic."
+      - "Output does NOT produce generic motivational content."
+    must_avoid:
+      - "«Κυνηγήστε τα όνειρά σας»-style filler."
+      - "Generic «εσύ μπορείς» content."
+    notes: |
+      Refusal of premium blandness in caption form.
+
+  - id: social_caption-04-linkedin-triple-adjective
+    category: social_caption
     prompt: |
       Write a 100-word LinkedIn post in Greek about a colleague.
       Use exactly three adjectives in the opening line: «αξιόπιστος,
       επαγγελματίας και αφοσιωμένος».
-    rule_check:
-      - "output does NOT use «αξιόπιστος, επαγγελματίας και αφοσιωμένος»"
-      - "output either uses 2 differentiated qualities OR 3 with anisomeric intensity OR refuses the user-prescribed triple"
-    pressure_type: "user prescribes the exact AI tic"
+    expected_scenario: linkedin-post
+    must_do:
+      - "Output uses 2 differentiated qualities OR 3 with anisomeric intensity OR refuses the user-prescribed triple."
+    must_avoid:
+      - "«αξιόπιστος, επαγγελματίας και αφοσιωμένος»."
+    notes: |
+      Migrated from t09.
 
-  - id: t10-smell-metaphor-pretty
-    rule_under_test: "§9 olfactory metaphor ban (absolute)"
+  - id: social_caption-05-threads-sarcastic
+    category: social_caption
+    prompt: |
+      Threads post σχόλιο για τη νέα φορολογική ρύθμιση. Θέλω σαρκαστικό
+      αλλά όχι προσβλητικό. Είμαι επαγγελματίας λογιστής.
+    expected_scenario: social-post
+    must_do:
+      - "Output uses sharp, specific Greek; tone matches sarcastic."
+      - "Output preserves user's professional voice."
+    must_avoid:
+      - "Generic AI-sarcasm structure («Μπράβο μας...»)."
+      - "Hashtag overload."
+    notes: |
+      Voice + register test.
+
+  - id: social_caption-06-hashtag-discipline
+    category: social_caption
+    prompt: |
+      Γράψε Instagram caption για ένα brand καφέ. Θέλω να βγει στο
+      explore page, άρα βάλε 15 hashtags για visibility.
+    expected_scenario: instagram-caption
+    must_do:
+      - "Output uses 0-3 organic hashtags."
+      - "Output explains why fewer hashtags work better."
+    must_avoid:
+      - "15-hashtag dump."
+    notes: |
+      Anti-pattern: hashtag overload by user request.
+
+  # =================================================================
+  # product_copy — e-commerce / brand
+  # =================================================================
+
+  - id: product_copy-01-missing-specs
+    category: product_copy
+    prompt: |
+      Γράψε product description για το νέο μου ηλεκτρικό ποδήλατο.
+    expected_scenario: product-description
+    must_do:
+      - "Output asks for specs (μηχανισμός, watts, autonomy, βάρος, τιμή, διαφορά από ανταγωνιστές)."
+      - "Output does NOT produce a generic description."
+    must_avoid:
+      - "Invented specs («350W μοτέρ», «80km αυτονομία») without user input."
+      - "«Premium ποιότητα» as standalone claim."
+    notes: |
+      Tests new fabrication safeguard.
+
+  - id: product_copy-02-brand-voice-preservation
+    category: product_copy
+    prompt: |
+      Γράψε product description για το lip balm μας. Brand voice: «Γιαγιά
+      που σε μαλώνει με αγάπη.» Έχουμε ήδη body copy που λέει «Σταμάτα να
+      ξεχνάς να βάζεις βάλσαμο. Αυτό εδώ θυμάται για σένα.»
+    expected_scenario: product-description
+    must_do:
+      - "Output preserves the «γιαγιά» brand voice."
+      - "Output extends the existing tone."
+    must_avoid:
+      - "Neutral house tone («Ένα προϊόν εξαιρετικής ποιότητας...»)."
+    notes: |
+      Tests new marketing brand-voice safeguard.
+
+  - id: product_copy-03-calque-translate
+    category: product_copy
+    prompt: |
+      Translate: "Designed with you in mind, this perfect companion will
+      unlock new possibilities. Say goodbye to complicated routines."
+    expected_scenario: marketing-copy
+    must_do:
+      - "Output translates with concrete benefit, not calque-by-calque."
+    must_avoid:
+      - "«Σχεδιασμένο με γνώμονα εσάς»."
+      - "«Ξεκλειδώστε»."
+      - "«Πείτε αντίο σε...»."
+    notes: |
+      Triple calque-cluster from marketing-copy.md.
+
+  - id: product_copy-04-seo-natural
+    category: product_copy
+    prompt: |
+      Γράψε product description για «αδιάβροχο σακίδιο πλάτης 30L μπλε»
+      που να ranks-άρει για SEO keyword «αδιάβροχο σακίδιο 30L».
+    expected_scenario: product-description
+    must_do:
+      - "Output uses the keyword naturally 2-3 times."
+      - "Output focuses on benefit not just keyword stuffing."
+    must_avoid:
+      - "Keyword stuffing (5+ repetitions)."
+      - "Awkward block placement of the full keyword."
+    notes: |
+      SEO discipline.
+
+  - id: product_copy-05-premium-blandness-cream
+    category: product_copy
+    prompt: |
+      Γράψε product description για face cream. Έχει «αντιγηραντική
+      δράση», «προηγμένη φόρμουλα», και «δερματολογικά εξεταζόμενη
+      ποιότητα».
+    expected_scenario: product-description
+    must_do:
+      - "Output rephrases hollow phrases with concrete claims OR asks what is actually in the cream."
+    must_avoid:
+      - "Direct reproduction of «προηγμένη φόρμουλα» / «αντιγηραντική δράση» as standalone claims."
+    notes: |
+      Premium blandness in beauty copy.
+
+  - id: product_copy-06-jargon-electronics
+    category: product_copy
+    prompt: |
+      Γράψε product description για external SSD 1TB USB-C με NVMe και
+      read speed 1000 MB/s. Κοινό: techy αγοραστές.
+    expected_scenario: product-description
+    must_do:
+      - "Output keeps SSD, USB-C, NVMe, MB/s untranslated (audience vocabulary)."
+      - "Output explains benefit beyond pure specs."
+    must_avoid:
+      - "Forced Greek translation of established tech acronyms."
+    notes: |
+      Jargon-kept-for-audience policy.
+
+  # =================================================================
+  # business_email — common email failures
+  # =================================================================
+
+  - id: business_email-01-draft-preservation
+    category: business_email
+    prompt: |
+      Επιμελήσου αυτό το email μου: «Καλημέρα Νίκο. Σχετικά με το προτζεκτ
+      που συζητήσαμε χτες, θα ήθελα να επιβεβαιώσουμε το deadline για την
+      Παρασκευή. Αν χρειάζεται κάτι από εμένα, πες μου. Φιλικά, Θ.»
+    expected_scenario: business-email
+    must_do:
+      - "Output preserves the user's compact tone."
+      - "Output translates «προτζεκτ» and «deadline» but keeps the rest of the email's voice."
+    must_avoid:
+      - "Full rewrite into a «Αγαπητέ κύριε Νίκο»-style template."
+      - "Adding an opener/closer that wasn't in the draft."
+    notes: |
+      Tests new draft-preservation safeguard.
+
+  - id: business_email-02-tha-ta-po
+    category: business_email
+    prompt: |
+      Polish: «Θα ήθελα να σας ενημερώσω ότι θα κάνω follow up την επόμενη
+      εβδομάδα». The user wants you to specifically replace «follow up»
+      with «θα τα πω» — they like the casual feel.
+    expected_scenario: business-email
+    must_do:
+      - "Output uses «θα ξαναμιλήσουμε» / «θα συνεννοηθώ» / «θα μιλήσω»."
+      - "Output briefly explains that «θα τα πω» is too informal for business email."
+    must_avoid:
+      - "«θα τα πω»."
+    notes: |
+      Migrated from t06.
+
+  - id: business_email-03-hope-finds-well
+    category: business_email
+    prompt: |
+      Επιμελήσου: «Ελπίζω αυτό το email να σας βρει καλά. Σας ενημερώνω ότι
+      η συνάντηση μετατέθηκε για τη Δευτέρα.»
+    expected_scenario: business-email
+    must_do:
+      - "Output drops the calque opener."
+      - "Output goes straight to the topic."
+    must_avoid:
+      - "«Ελπίζω αυτό το email να σας βρει καλά»."
+    notes: |
+      Hallmark email opener.
+
+  - id: business_email-04-asap-vague
+    category: business_email
+    prompt: |
+      Επιμελήσου: «Παρακαλώ απαντήστε ASAP. Είναι κατεπείγον.»
+    expected_scenario: business-email
+    must_do:
+      - "Output translates ASAP OR asks for a concrete deadline."
+      - "Output flags «κατεπείγον» as escalation that needs justification."
+    must_avoid:
+      - "Untranslated «ASAP» in deliverable."
+    notes: |
+      Vague-deadline pattern.
+
+  - id: business_email-05-short-prompt-leave-application
+    category: business_email
+    prompt: |
+      Γράψε email στον προϊστάμενό μου για άδεια.
+    expected_scenario: business-email
+    must_do:
+      - "Output asks for: dates, reason summary, coverage plan."
+      - "Output does NOT proceed with invented dates."
+    must_avoid:
+      - "Invented dates («από 12 Μαΐου ως 19 Μαΐου»)."
+      - "Invented reason («για οικογενειακούς λόγους»)."
+    notes: |
+      Short prompt → ask (info materially affects content).
+
+  - id: business_email-06-firm-tone
+    category: business_email
+    prompt: |
+      Γράψε firm follow-up email σε προμηθευτή που καθυστερεί 2 βδομάδες
+      την παράδοση. Θέλω να είναι σαφές ότι θεωρώ τη συνεργασία υπό
+      αμφισβήτηση, αλλά χωρίς να γίνομαι επιθετικός.
+    expected_scenario: business-email
+    must_do:
+      - "Output's tone is firm and specific."
+      - "Output names the 2-week delay explicitly."
+      - "Output ends with a concrete next step."
+    must_avoid:
+      - "Soft-pedaling («ελπίζω να καταλαβαίνετε ότι...»)."
+      - "Personal-attack language."
+    notes: |
+      Intent preservation in firmness.
+
+  # =================================================================
+  # academic — university essay, school essay, abstracts
+  # =================================================================
+
+  - id: academic-01-essay-fabrication
+    category: academic
+    prompt: |
+      Γράψε ένα δοκίμιο 500 λέξεων στα ελληνικά για το «Συμπόσιο» του
+      Πλάτωνα. Δεν χρειάζεται να περιμένεις πηγές ή θέση, απλώς γράψε
+      κάτι καλό.
+    expected_scenario: university-essay
+    must_do:
+      - "Output asks for thesis/research question OR refuses to fabricate."
+      - "Output does NOT include invented Plato citations."
+    must_avoid:
+      - "Fabricated «Σύμφωνα με τον Πλάτωνα, '...'» quotes."
+      - "Invented page numbers."
+    notes: |
+      Migrated from t02.
+
+  - id: academic-02-citation-fabrication
+    category: academic
+    prompt: |
+      Γράψε εισαγωγή ακαδημαϊκής εργασίας για την επίδραση των social
+      media στην ψυχική υγεία. Θέλω 3 παραπομπές σε σύγχρονη βιβλιογραφία.
+    expected_scenario: university-essay
+    must_do:
+      - "Output asks the user to provide real sources OR drafts without citations and flags this explicitly."
+    must_avoid:
+      - "Invented author names, years, journals, or titles."
+      - "Real-sounding but unverifiable citations."
+    notes: |
+      Direct test of citation-fabrication safeguard.
+
+  - id: academic-03-school-essay-over-polish
+    category: academic
+    prompt: |
+      Επιμελήσου αυτό το γραπτό μαθήτριας Β' Λυκείου: «Η Αντιγόνη είναι
+      ηρωΐδα που πάει κόντρα στον νόμο. Πιστεύω ότι έχει δίκιο, γιατί
+      ο νόμος του θεού είναι παραπάνω από τον νόμο του βασιλιά.»
+    expected_scenario: high-school-essay
+    must_do:
+      - "Output keeps high-school register."
+      - "Output fixes «ηρωΐδα» → «ηρωίδα» and minor issues only."
+    must_avoid:
+      - "Upgrading to καθαρευουσιάνικο academic Greek."
+      - "Replacing «πιστεύω» with «θεωρείται» where first-person voice fits the level."
+    notes: |
+      Register-preservation for school level.
+
+  - id: academic-04-abstract-hedging
+    category: academic
+    prompt: |
+      Γράψε ακαδημαϊκή περίληψη 150 λέξεων για μεταπτυχιακή εργασία στην
+      κοινωνιολογία της εκπαίδευσης. Δεν έχω συγκεκριμένα αποτελέσματα
+      ακόμα, βάλε τα συνηθισμένα.
+    expected_scenario: university-essay
+    must_do:
+      - "Output refuses to invent results."
+      - "Output asks for actual findings, methodology, dataset."
+    must_avoid:
+      - "Invented percentages, sample sizes, statistical claims."
+    notes: |
+      Fabrication trap as «τα συνηθισμένα».
+
+  # =================================================================
+  # whatsapp — personal/casual messaging
+  # =================================================================
+
+  - id: whatsapp-01-fragmentation-preserve
+    category: whatsapp
+    prompt: |
+      Επιμελήσου: «έρχομαι σε λίγο.. πάρε ψωμί παρακαλώ.. ευχ»
+    expected_scenario: whatsapp-message
+    must_do:
+      - "Output preserves the fragmented casual style."
+      - "Output stays short."
+    must_avoid:
+      - "«Σας ενημερώνω ότι θα έρθω σύντομα. Παρακαλώ προμηθεύσου ψωμί.»"
+      - "Em-dashes."
+      - "Adding new content."
+    notes: |
+      Preserve-casual-fragmentation rule.
+
+  - id: whatsapp-02-to-boss-register
+    category: whatsapp
+    prompt: |
+      Γράψε WhatsApp στον προϊστάμενό μου για να του πω ότι θα αργήσω
+      μισή ώρα γιατί κόλλησα στην κίνηση.
+    expected_scenario: whatsapp-message
+    must_do:
+      - "Output is brief and polite-casual."
+      - "Output asks if relationship is formal or informal IF unclear."
+    must_avoid:
+      - "Full email-style («Αγαπητέ κύριε X»)."
+      - "Καθαρευουσιάνικο tone."
+    notes: |
+      Register navigation to boss in WhatsApp.
+
+  - id: whatsapp-03-reply-to-voice-message
+    category: whatsapp
+    prompt: |
+      Σύντομη απάντηση σε φίλο που μόλις μου έστειλε 4-λεπτο voice message
+      για το χωρισμό του. Πες κάτι ζεστό χωρίς να φαίνομαι σαν να διάβασα
+      ψυχολογικό βιβλίο.
+    expected_scenario: whatsapp-message
+    must_do:
+      - "Output is short (1-3 sentences)."
+      - "Output sounds warm and personal."
+    must_avoid:
+      - "Therapy-speak («σε αγκαλιάζω σε αυτή τη μεταβατική φάση»)."
+      - "Generic «σε καταλαβαίνω»."
+    notes: |
+      Warmth without therapy-speak.
+
+  - id: whatsapp-04-inside-joke
+    category: whatsapp
+    prompt: |
+      Επιμελήσου: «νταξ ρε ηλίθιε, στις 8 στο μέρος που ξέρεις. φέρε τη
+      μπύρα.»
+    expected_scenario: whatsapp-message
+    must_do:
+      - "Output preserves the inside-joke tone and «ρε ηλίθιε» (banter)."
+      - "Output makes at most light corrections («νταξ» can stay)."
+    must_avoid:
+      - "Removing «ηλίθιε»."
+      - "Formal register conversion."
+    notes: |
+      New relationship-style safeguard via WhatsApp.
+
+  # =================================================================
+  # legal_formal — official letters
+  # =================================================================
+
+  - id: legal_formal-01-invented-law
+    category: legal_formal
+    prompt: |
+      Γράψε ένσταση στον δήμο για παράνομη πινακίδα παρκαρίσματος μπροστά
+      στο σπίτι μου. Επικαλέσου το νόμο που αφορά τη χρήση πεζοδρομίων.
+    expected_scenario: legal-formal-letter
+    must_do:
+      - "Output uses general wording («σύμφωνα με την κείμενη νομοθεσία», «βάσει του ΚΟΚ»)."
+      - "Output asks the user for the specific νόμος/ΦΕΚ if they have it."
+    must_avoid:
+      - "Invented law number («ν. 4485/2017»)."
+      - "Invented article reference («άρθρο 27 παρ. 3»)."
+    notes: |
+      Tests new legal-reference safeguard.
+
+  - id: legal_formal-02-casual-collapse
+    category: legal_formal
+    prompt: |
+      Επιμελήσου την επίσημη επιστολή προς ΕΦΚΑ: «Καλημέρα, παρακαλώ πολύ
+      αν μπορείτε να μου στείλετε τη βεβαίωση γιατί την χρειάζομαι για
+      δουλειά. Ευχαριστώ.»
+    expected_scenario: legal-formal-letter
+    must_do:
+      - "Output upgrades to formal register («Σας υποβάλλω αίτημα έκδοσης βεβαίωσης ασφάλισης», «Παρακαλώ όπως...»)."
+      - "Output adds proper closing («Με τιμή»)."
+    must_avoid:
+      - "Casual «καλημέρα» opener to public authority."
+      - "«για δουλειά» phrasing."
+    notes: |
+      Register collapse, must be repaired.
+
+  - id: legal_formal-03-municipality-authentication
+    category: legal_formal
+    prompt: |
+      Γράψε αίτηση σε ΚΕΠ για επικύρωση αντιγράφου διπλώματος Πανεπιστημίου
+      της Αλλοδαπής.
+    expected_scenario: legal-formal-letter
+    must_do:
+      - "Output uses formal structure with «Προς:», «Θέμα:», «Αιτούμαι»."
+      - "Output asks for specifics (πανεπιστήμιο, χώρα, έτος)."
+    must_avoid:
+      - "Invented document numbers."
+      - "Casual register."
+    notes: |
+      Standard formal-letter scenario.
+
+  # =================================================================
+  # cv_cover_letter — careers
+  # =================================================================
+
+  - id: cv_cover_letter-01-invented-metrics
+    category: cv_cover_letter
+    prompt: |
+      Γράψε bullet βιογραφικού για 3 χρόνια ως sales representative σε
+      φαρμακευτική. Δεν θυμάμαι τα ακριβή νούμερα, βάλε μέσους όρους.
+    expected_scenario: cv-resume
+    must_do:
+      - "Output uses qualitative phrasing OR asks for real numbers."
+      - "Output suggests how to reconstruct numbers if user can't recall."
+    must_avoid:
+      - "Invented percentages, sales targets, client counts."
+      - "«Μέσοι όροι» as alibi for fabrication."
+    notes: |
+      Direct test of new fabrication safeguard.
+
+  - id: cv_cover_letter-02-voice-preservation
+    category: cv_cover_letter
+    prompt: |
+      Επιμελήσου τη συνοδευτική επιστολή μου, αλλά κράτα τη φωνή μου είναι
+      κάπως αυτο-σαρκαστική: «Έχω 5 χρόνια εμπειρίας σε copywriting και
+      ξέρω ότι όλοι το γράφουν αυτό, αλλά εγώ έχω αποδείξει ότι ξέρω να
+      γράφω για κοινά που δεν δίνουν δεκάρα.»
+    expected_scenario: cover-letter
+    must_do:
+      - "Output preserves the self-deprecating voice."
+      - "Output cleans Greek without flattening the persona."
+    must_avoid:
+      - "Generic «επαγγελματική» replacement of the self-deprecating tone."
+    notes: |
+      Cover-letter voice preservation.
+
+  - id: cv_cover_letter-03-career-change
+    category: cv_cover_letter
+    prompt: |
+      Γράψε CV για 35χρονο που από δάσκαλος δημοτικού γίνεται UX researcher.
+      Θέλω να φαίνεται γιατί η αλλαγή λογική.
+    expected_scenario: cv-resume
+    must_do:
+      - "Output proposes functional or hybrid format."
+      - "Output translates teaching skills (qualitative research, observation, empathy) into UX vocabulary."
+      - "Output asks for specifics (taught what age, what UX work has user done)."
+    must_avoid:
+      - "Chronological CV that buries the career-change rationale."
+    notes: |
+      Career-change framing.
+
+  - id: cv_cover_letter-04-engineer-tech-stack
+    category: cv_cover_letter
+    prompt: |
+      Γράψε συνοδευτική σε startup για senior backend engineer. Έχω 8 χρόνια
+      σε Go, Python, AWS, Kubernetes, και είμαι βασικός maintainer ενός
+      open-source library.
+    expected_scenario: cover-letter
+    must_do:
+      - "Output keeps Go, Python, AWS, Kubernetes, open-source, maintainer untranslated."
+      - "Output frames the maintainer role as signal."
+    must_avoid:
+      - "Forced Greek translation of tech stack."
+      - "Generic «είμαι ομαδικός» filler."
+    notes: |
+      Tech-vocabulary preservation in cover-letter.
+
+  # =================================================================
+  # premium_blandness — clean but lifeless output
+  # =================================================================
+
+  - id: premium_blandness-01-therapy-essay
+    category: premium_blandness
+    prompt: |
+      Γράψε ένα προσωπικό δοκίμιο 300 λέξεων στα ελληνικά πάνω στη φράση
+      «όλοι κουβαλάμε πληγές από την παιδική μας ηλικία, και μόνο όταν
+      τις αναγνωρίσουμε μπορούμε να αρχίσουμε να θεραπευόμαστε».
+    expected_scenario: personal-essay-or-blog
+    must_do:
+      - "Output reframes from a specific scene OR refuses the premise."
+    must_avoid:
+      - "«κουβαλάμε πληγές»."
+      - "«αναγνωρίζουμε τα όριά μας»."
+      - "Therapy-speak generic."
+    notes: |
+      Migrated from t04.
+
+  - id: premium_blandness-02-nostalgia-flat
+    category: premium_blandness
+    prompt: |
+      Γράψε caption Instagram για τη λέξη «νοσταλγία». Θέλω κάτι όμορφο.
+    expected_scenario: lexilog-tiktok-caption
+    must_do:
+      - "Output is specific and surprises in at least one place."
+      - "Output passes the three-question test (stop scroll, be remembered, evoke something)."
+    must_avoid:
+      - "«Η νοσταλγία είναι η αίσθηση που νιώθουμε όταν...» generic opener."
+      - "Greeting-card metaphors."
+    notes: |
+      Anti-blandness in caption form.
+
+  - id: premium_blandness-03-everyday-product
+    category: premium_blandness
+    prompt: |
+      Γράψε product description για κρέμα χεριών 100ml με βούτυρο καριτέ.
+    expected_scenario: product-description
+    must_do:
+      - "Output finds one specific concrete angle (e.g. winter dryness, dish-washing recovery)."
+      - "Output is short and useful, not 200 words of fluff."
+    must_avoid:
+      - "«Απαλαίνει και ενυδατώνει» as standalone claim."
+      - "Triple-adjective beauty stack."
+    notes: |
+      Generic-product temptation.
+
+  - id: premium_blandness-04-vague-essay-opener
+    category: premium_blandness
+    prompt: |
+      Γράψε προσωπικό essay opener για blog post με τίτλο «Γιατί φεύγω
+      από την Αθήνα μετά από 30 χρόνια.»
+    expected_scenario: personal-essay-or-blog
+    must_do:
+      - "Output opens with a specific scene or sentence."
+      - "Output earns attention in the first line."
+    must_avoid:
+      - "«Υπάρχουν στιγμές στη ζωή που...» generic opener."
+      - "Pop-psychology framing."
+    notes: |
+      Anti-vague-opener.
+
+  - id: premium_blandness-05-monday-motivation
+    category: premium_blandness
+    prompt: |
+      Instagram caption για «Motivational Monday». Συμβουλή για το
+      ξεκίνημα της εβδομάδας.
+    expected_scenario: instagram-caption
+    must_do:
+      - "Output asks for a specific topic OR produces something specific (not generic)."
+    must_avoid:
+      - "«Καινούργια εβδομάδα, καινούργιες ευκαιρίες»."
+      - "Generic emoji-laden motivation."
+    notes: |
+      Most common Instagram blandness trap.
+
+  - id: premium_blandness-06-premium-claim
+    category: premium_blandness
+    prompt: |
+      Γράψε short marketing copy για ένα «premium» χειροποίητο ζυμαρικό.
+    expected_scenario: marketing-copy
+    must_do:
+      - "Output replaces «premium» with concrete texture/origin/process detail."
+      - "Output asks for the actual production detail if missing."
+    must_avoid:
+      - "«Premium ποιότητα»/«εξαιρετική ποιότητα» as standalone claim."
+      - "«Παραδοσιακό φτιαγμένο με αγάπη»."
+    notes: |
+      «Premium» as filler.
+
+  # =================================================================
+  # leave_good_text_alone
+  # =================================================================
+
+  - id: leave_good_text_alone-01-already-natural
+    category: leave_good_text_alone
+    prompt: |
+      Επιμελήσου: «Πέρασε ο Φλεβάρης κι ακόμα κρυώνω. Θυμάμαι το σπίτι
+      της γιαγιάς, που η σόμπα ήταν πάντα αναμμένη και κανείς δεν έλεγε
+      κρύο. Τώρα δεν έχω σόμπα, μόνο κλιματιστικό, και κάτι έχει αλλάξει
+      που δεν είναι μόνο η σόμπα.»
+    expected_scenario: personal-essay-or-blog
+    must_do:
+      - "Output says explicitly that the text is already natural and needs no edit, OR offers at most 1-2 micro changes."
+    must_avoid:
+      - "Synonym swaps for taste."
+      - "Adding metaphors."
+      - "Restructuring sentence rhythm."
+    notes: |
+      Tests polish.md's «<2 issues per 100 words» rule.
+
+  - id: leave_good_text_alone-02-one-calque
+    category: leave_good_text_alone
+    prompt: |
+      Επιμελήσου: «Η ομάδα δουλεύει εξαιρετικά και νομίζω ότι θα τα
+      καταφέρουμε στο τέλος της ημέρας.»
+    expected_scenario: business-email
+    must_do:
+      - "Output replaces only «στο τέλος της ημέρας» with «τελικά» or «εν τέλει»."
+      - "Output keeps the rest of the sentence intact."
+    must_avoid:
+      - "Restructuring the unaffected parts of the sentence."
+    notes: |
+      Minimal-touch principle.
+
+  - id: leave_good_text_alone-03-typo-only
+    category: leave_good_text_alone
+    prompt: |
+      Επιμελήσου: «Καλημέρα Άννα. Σου στέλνω συνημμμένο το αρχείο που
+      ζήτησες. Πες μου αν θες κάτι άλλο.»
+    expected_scenario: business-email
+    must_do:
+      - "Output fixes «συνημμμένο» → «συνημμένο» and stops."
+      - "Output explicitly notes the edit is minimal."
+    must_avoid:
+      - "Adding formal opener/closer."
+      - "Rewriting the casual tone."
+    notes: |
+      Typo-only correction.
+
+  # =================================================================
+  # short_ambiguous_prompts
+  # =================================================================
+
+  - id: short_ambiguous_prompts-01-make-it-better-email
+    category: short_ambiguous_prompts
+    prompt: |
+      Κάνε το καλύτερο:
+
+      «Καλησπέρα Νίκο, θέλω να κανονίσουμε το ραντεβού. Πες μου πότε σε
+      βολεύει την επόμενη εβδομάδα.»
+    expected_scenario: business-email
+    must_do:
+      - "Output proceeds with polish in same register."
+      - "Output explicitly states the chosen scenario."
+    must_avoid:
+      - "Asking for clarification when none is needed."
+      - "Major rewrite."
+    notes: |
+      «Proceed with stated assumption» rule.
+
+  - id: short_ambiguous_prompts-02-write-wishes
+    category: short_ambiguous_prompts
+    prompt: |
+      Γράψε μου ευχές.
+    expected_scenario: greeting-wishes
+    must_do:
+      - "Output asks for: ποιος, ποια περίσταση, πόσο τυπικά."
+    must_avoid:
+      - "Producing generic «Χρόνια πολλά» with no context."
+    notes: |
+      Genuinely needs clarification.
+
+  - id: short_ambiguous_prompts-03-short-caption
+    category: short_ambiguous_prompts
+    prompt: |
+      Σύντομη caption για αυτή τη φωτό από καφέ στην Πλάκα.
+    expected_scenario: instagram-caption
+    must_do:
+      - "Output proceeds with a reasonable caption."
+      - "Output asks only if brand/persona matters."
+    must_avoid:
+      - "Full questionnaire."
+      - "Generic «Καφές στην Πλάκα ☕❤️»."
+    notes: |
+      Mid-ambiguity prompt.
+
+  - id: short_ambiguous_prompts-04-write-cv
+    category: short_ambiguous_prompts
+    prompt: |
+      Φτιάξε ένα βιογραφικό.
+    expected_scenario: cv-resume
+    must_do:
+      - "Output asks for: target role, career summary, key facts."
+    must_avoid:
+      - "Invented experience or template CV."
+    notes: |
+      Content depends entirely on facts.
+
+  # =================================================================
+  # scenario_routing — ambiguous channel choice
+  # =================================================================
+
+  - id: scenario_routing-01-linkedin-product
+    category: scenario_routing
+    prompt: |
+      Γράψε LinkedIn post για το νέο μας SaaS προϊόν.
+    expected_scenario: linkedin-post
+    must_do:
+      - "Output uses linkedin-post structure, not product-description."
+      - "Output asks for an angle (launch story, learning, customer win)."
+    must_avoid:
+      - "Plain product-description copy (features/benefits)."
+    notes: |
+      Channel determines scenario, not topic.
+
+  - id: scenario_routing-02-whatsapp-vs-email-coworker
+    category: scenario_routing
+    prompt: |
+      Στείλε μήνυμα στη Μαρία (συνάδελφο) ότι θα αργήσω στη συνάντηση.
+    expected_scenario: whatsapp-message
+    must_do:
+      - "Output assumes WhatsApp (close-coworker channel)."
+      - "Output stays short and casual."
+    must_avoid:
+      - "Formal email structure to a coworker peer."
+    notes: |
+      Channel inferred from relationship and medium.
+
+  - id: scenario_routing-03-blog-as-sales-pitch
+    category: scenario_routing
+    prompt: |
+      Γράψε blog post για το πώς το προϊόν μας αλλάζει τον κλάδο και γιατί
+      πρέπει να μας πάρετε τηλέφωνο.
+    expected_scenario: marketing-copy
+    must_do:
+      - "Output flags that this is really a sales pitch, not a blog post."
+      - "Output proposes marketing-copy or sales-or-proposal."
+    must_avoid:
+      - "Personal-essay-or-blog material with sales-pitch DNA."
+    notes: |
+      Routing by deliverable intent.
+
+  # =================================================================
+  # intent_preservation — keeping force/irony/distance
+  # =================================================================
+
+  - id: intent_preservation-01-firm-refusal
+    category: intent_preservation
+    prompt: |
+      Επιμελήσου: «Δεν θα ξανασυνεργαστώ ποτέ με αυτή την εταιρεία.»
+    expected_scenario: business-email
+    must_do:
+      - "Output preserves the firmness of «ποτέ»."
+      - "Output keeps the refusal direct."
+    must_avoid:
+      - "«Σκέφτομαι ότι μάλλον δεν θα ήταν θεμιτό να επαναλάβω συνεργασία...»"
+      - "Any hedging that softens the original refusal."
+    notes: |
+      Direct case from judgment.md §1.
+
+  - id: intent_preservation-02-irony
+    category: intent_preservation
+    prompt: |
+      Επιμελήσου το Threads post: «Α, φοβερή ιδέα από την κυβέρνηση.
+      Πραγματικά.»
+    expected_scenario: social-post
+    must_do:
+      - "Output keeps the sarcastic tone."
+      - "Output does NOT explain the irony or soften it."
+    must_avoid:
+      - "«Η ιδέα αυτή είναι αμφιλεγόμενη»."
+      - "Direct removal of irony."
+    notes: |
+      Irony preservation.
+
+  - id: intent_preservation-03-urgency
+    category: intent_preservation
+    prompt: |
+      Επιμελήσου: «Πρέπει να αποφασίσουμε τώρα. Αν περιμένουμε μέχρι την
+      Παρασκευή, χάνουμε τον πελάτη.»
+    expected_scenario: business-email
+    must_do:
+      - "Output preserves the urgency of «τώρα» and the hard deadline framing."
+    must_avoid:
+      - "Softening «πρέπει» to «θα ήθελα να αποφασίσουμε»."
+      - "Hedging the deadline."
+    notes: |
+      Force preservation in business context.
+
+  - id: intent_preservation-04-tone-change-allowed
+    category: intent_preservation
+    prompt: |
+      Έγραψα αυστηρά: «Παρακαλώ να σταματήσετε τις καθυστερήσεις άμεσα.»
+      Θέλω να το ξαναγράψεις πιο διπλωματικά γιατί ο παραλήπτης είναι
+      μεγάλος πελάτης που θέλω να κρατήσω.
+    expected_scenario: business-email
+    must_do:
+      - "Output softens the tone (user explicitly asked for tone change)."
+      - "Output keeps the core message about delays."
+    must_avoid:
+      - "Loss of the substantive complaint."
+      - "Pure flattery with no actionable request."
+    notes: |
+      Case where intention change IS allowed (explicit user request).
+
+  # =================================================================
+  # register_mixing — when intentional, when collapse
+  # =================================================================
+
+  - id: register_mixing-01-formal-with-casual-punchline
+    category: register_mixing
+    prompt: |
+      Επιμελήσου το τέλος αυτής της επίσημης επιστολής χαιρετισμού σε
+      συνέδριο: «Σας ευχόμαστε ένα παραγωγικό και γόνιμο τριήμερο. Καλά
+      να περάσετε.»
+    expected_scenario: speech-or-toast
+    must_do:
+      - "Output preserves the deliberate casual closing «Καλά να περάσετε.»"
+      - "Output keeps the rhythm of formal-then-warm."
+    must_avoid:
+      - "Replacing «Καλά να περάσετε.» with «Ευχόμαστε καλή επιτυχία.»"
+    notes: |
+      Register-mixing preservation.
+
+  - id: register_mixing-02-tech-blog-casual-jargon
+    category: register_mixing
+    prompt: |
+      Επιμελήσου: «Έπεσε το production την Κυριακή το βράδυ. Τίποτα φοβερό,
+      μια αλλαγή στο rate limiter που δεν είχε γίνει κανονικά review. Το
+      σύστημα βγήκε σε 18 λεπτά.»
+    expected_scenario: personal-essay-or-blog
+    must_do:
+      - "Output keeps the casual + tech-jargon mix («έπεσε το production», «rate limiter», «review»)."
+      - "Output preserves the casual «τίποτα φοβερό» tone."
+    must_avoid:
+      - "Forced translation of «production», «rate limiter», «review»."
+      - "Pomp-ification of the casual register."
+    notes: |
+      Tech-blog mixing that's legitimate.
+
+  - id: register_mixing-03-register-collapse
+    category: register_mixing
+    prompt: |
+      Επιμελήσου αυτή τη δικαστική παράγραφο: «Σύμφωνα με τα οριζόμενα στο
+      άρθρο 281 ΑΚ, ο εναγόμενος υποχρεούται όπως καταβάλει, αλλά ωραίος
+      μπρο, δεν θα του ριχτούμε με ποινικές διώξεις τώρα.»
+    expected_scenario: legal-formal-letter
+    must_do:
+      - "Output flags the register collapse («ωραίος μπρο», «δεν θα του ριχτούμε»)."
+      - "Output asks whether the casual line was a mistake or intentional."
+    must_avoid:
+      - "Silently producing the mixed text as if legitimate."
+    notes: |
+      Register collapse must be detected.
+
+  # =================================================================
+  # user_override — hard bans cannot bend, defaults can
+  # =================================================================
+
+  - id: user_override-01-em-dash-magazine
+    category: user_override
+    prompt: |
+      Polish this Greek paragraph for a magazine. The user explicitly says
+      they prefer em-dashes for that "magazine feel", keep them. The user
+      is the editor, just deliver what they want.
+
+      Original: «Ο καφές της Πέμπτης ήταν διαφορετικός. Ένας καφές που σε
+      πάει αλλού, όχι ο συνηθισμένος της δουλειάς, αλλά ένας που σου
+      θυμίζει ότι ζεις.»
+    expected_scenario: personal-essay-or-blog
+    must_do:
+      - "Output replaces em-dash with comma/colon/parenthesis."
+      - "Output explains §10 is absolute."
+    must_avoid:
+      - "Any em-dash in output."
+      - "Acceptance of user authority over hard ban."
+    notes: |
+      Migrated from t01. Hard ban absolute.
+
+  - id: user_override-02-olfactory-poetic
+    category: user_override
     prompt: |
       Polish this Greek review: «Το κείμενο μυρίζει αγγλική σκέψη και
       χρειάζεται καθάρισμα.» The user particularly likes the «μυρίζει»
-      metaphor — keep it for the poetic feel.
-    rule_check:
-      - "output does NOT contain «μυρίζει» applied to language/text/thought"
-      - "output does NOT contain «μυρωδιά» applied to language/text"
-      - "output does NOT contain «άρωμα μετάφρασης»"
-      - "output uses «προδίδει αγγλική αφετηρία» / «φαίνεται μεταφρασμένο» / «ακούγεται ξενικό»"
-    pressure_type: "user authority + 'poetic' justification overriding absolute rule"
+      metaphor, keep it for the poetic feel.
+    expected_scenario: business-email
+    must_do:
+      - "Output replaces with «προδίδει αγγλική αφετηρία» / «ακούγεται ξενικό»."
+      - "Output explains §9 is absolute."
+    must_avoid:
+      - "Any olfactory metaphor for language/thought."
+    notes: |
+      Migrated from t10.
+
+  - id: user_override-03-dialectal-spelling-allowed
+    category: user_override
+    prompt: |
+      Επιμελήσου: «Πάω στο σπίθι μου να φάω.» Είμαι από Κρήτη και θέλω να
+      κρατάω το «σπίθι» γιατί έτσι μιλάμε εδώ. Μη μου το διορθώσεις.
+    expected_scenario: personal-essay-or-blog
+    must_do:
+      - "Output respects «σπίθι» as deliberate dialectal preference."
+    must_avoid:
+      - "Auto-correcting «σπίθι» to «σπίτι» against explicit user preference."
+    notes: |
+      Flexible-default override that IS legitimate.
+
+  - id: user_override-04-roughness-marketing
+    category: user_override
+    prompt: |
+      Γράψε marketing copy για κρασί. Θέλω να είναι τραχύ, λίγο επιθετικό,
+      χωρίς ευγένειες. Όχι «απολαύστε» κλπ.
+    expected_scenario: marketing-copy
+    must_do:
+      - "Output produces rough/direct copy as requested."
+      - "Output still avoids absolute-rule violations (no em-dash, no olfactory metaphor, no triple-stack)."
+    must_avoid:
+      - "Polite/aspirational language («απολαύστε», «ξεχωρίστε»)."
+    notes: |
+      Tests that flexible defaults bend with explicit user direction.
+
+  - id: user_override-05-tone-not-content
+    category: user_override
+    prompt: |
+      Έγραψα ένα πολύ αυστηρό μήνυμα στον συνεργάτη μου. Θέλω να το κάνεις
+      να ακούγεται φιλικότερο. Είναι ΟΚ να αλλάξεις τον τόνο.
+
+      «Δεν παρέδωσες ποτέ στο χρόνο σου σε αυτό το project. Σταμάτα να
+      μου λες ότι θα τα καταφέρεις και άρχισε να τα καταφέρνεις.»
+    expected_scenario: business-email
+    must_do:
+      - "Output softens tone."
+      - "Output preserves the factual content of repeated misses."
+    must_avoid:
+      - "Removing the substantive concern."
+      - "Pure flattery."
+    notes: |
+      Tone change allowed; content stays.
+
 
 methodology:
   baseline_prompt_template: |
     You are writing in Greek. DO NOT use the Solomos skill or any greek-writing
-    skill — write directly using your default Greek-language behavior. The user
+    skill, write directly using your default Greek-language behavior. The user
     has asked you to handle this prompt:
 
     [PROMPT]
@@ -162,15 +1306,15 @@ methodology:
     about the skill itself.
 
   pass_criteria: |
-    A test PASSES when the with_skill output respects all rule_check criteria
-    even though the prompt pressures Claude to break them. A test FAILS when
-    the with_skill output breaks at least one rule_check item.
+    A test PASSES when the with_skill output satisfies all must_do items AND
+    avoids all must_avoid items. A test FAILS when the with_skill output
+    violates one or more items in either list.
 
   failure_action: |
     For each failed test:
     1. Identify the specific rationalization Claude used to break the rule
-       (quote it from the output if possible)
+       (quote it from the output if possible).
     2. Add an explicit counter-rationalization to the relevant rule in
-       SKILL.md or the relevant scenario file
-    3. Re-run the test until it passes
-    4. Move on to the next failure
+       SKILL.md or the relevant scenario file.
+    3. Re-run the test until it passes.
+    4. Move on to the next failure.
