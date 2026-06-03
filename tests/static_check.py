@@ -75,6 +75,18 @@ FORMATTING_CONTEXT_HINTS = (
     "example",
 )
 
+# §10: em-dash (U+2014) and en-dash (U+2013) are banned in Greek prose.
+# A line containing one is allowed ONLY when it is documenting the rule or
+# the single literary-dialogue exception. If a real dialogue/screenplay
+# scenario is ever added, extend this allowlist accordingly.
+DASH_CHARS = ("—", "–")
+DASH_EXCEPTION_MARKERS = (
+    "em-dash",
+    "en-dash",
+    "λογοτεχνικός διάλογος",
+    "Καλημέρα, είπε",
+)
+
 
 def scan_files():
     files = []
@@ -138,6 +150,23 @@ def _short(line):
     return line if len(line) <= 120 else line[:117] + "..."
 
 
+def check_em_dashes():
+    hits = []
+    for path in scan_files():
+        rel = path.relative_to(ROOT).as_posix()
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except UnicodeDecodeError:
+            continue
+        for lineno, line in enumerate(lines, start=1):
+            if not any(d in line for d in DASH_CHARS):
+                continue
+            if any(marker in line for marker in DASH_EXCEPTION_MARKERS):
+                continue
+            hits.append(f"{rel}:{lineno}: em/en-dash in Greek prose (§10): {_short(line)}")
+    return hits
+
+
 def check_bad_terms():
     bad_term_hits = []
     followup_hits = []
@@ -182,6 +211,7 @@ def main():
     sections.append(("Known bad terms", bad_term_hits))
     sections.append(("follow-up outside allowed scope", followup_hits))
     sections.append(("formatting outside allowed context", formatting_hits))
+    sections.append(("Em/en-dash in Greek prose (§10)", check_em_dashes()))
 
     total = 0
     for name, errs in sections:
