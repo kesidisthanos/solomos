@@ -1,90 +1,42 @@
 # Σολωμός
 
-> Παράγει αυθεντικό ελληνικό λόγο, απαλλαγμένο από τη δομή και τα κλισέ της αυτόματης μετάφρασης. Από ακαδημαϊκές εργασίες μέχρι στρατηγικό marketing, γράφει απευθείας στα ελληνικά με το κατάλληλο ύφος και ακρίβεια.
+Ο Σολωμός γράφει, διορθώνει και μεταφράζει ελληνικά ώστε να διαβάζονται σαν να τα έγραψε άνθρωπος, χωρίς να αλλάζει τι λένε. Δουλεύει μέσα στο Claude.
 
-Skill για το [Claude Code](https://claude.com/claude-code) που **γράφει, επιμελείται και μεταφράζει** φυσικά ελληνικά, σε κάθε register και περίσταση. Στη σύνταξη γράφει νέο κείμενο κατευθείαν στα ελληνικά, χωρίς να ξεκινά από αγγλική σύλληψη· στην επιμέλεια αναγνωρίζει τα μοτίβα της αυτόματης μετάφρασης («αυτή η λέξη σημαίνει...», «κάθεται καλά με...», «ξεκλειδώστε τις δυνατότητές σας», «πείτε αντίο στο Χ») και τα ξαναγράφει σε φυσικά ελληνικά που σέβονται το register του εκάστοτε κειμένου.
+**Πριν:**
+
+> Ας είμαστε ειλικρινείς: η εκπαίδευση δεν είναι απλώς μια υποχρέωση. Είναι ένα ταξίδι. Τους τελευταίους έξι μήνες η ομάδα μας εκπαίδευσε 40 υπαλλήλους στο νέο σύστημα, αναδεικνύοντας τη δέσμευσή μας στην καινοτομία. Το αποτέλεσμα; Ο χρόνος απάντησης στους πελάτες μειώθηκε στο μισό. Και αυτό τα λέει όλα.
+
+**Μετά:**
+
+> Τους τελευταίους έξι μήνες εκπαιδεύσαμε 40 συναδέλφους στο νέο σύστημα. Οι πελάτες περιμένουν πια για απάντηση τον μισό χρόνο.
+
+## Τι πιάνει
+
+Τα κείμενα που γράφει μια μηχανή στα ελληνικά έχουν δύο ειδών σημάδια. Τα πρώτα υπάρχουν σε κάθε γλώσσα: το «δεν είναι απλώς Χ, είναι Υ», οι ατάκες στο κλείσιμο, οι στημένες εισαγωγές, οι τριάδες, οι παύλες, οι φουσκωμένες λέξεις. Τα δεύτερα είναι ελληνικά: εκφράσεις μεταφρασμένες λέξη προς λέξη από τα αγγλικά, αγγλική σύνταξη, αγγλικές λέξεις που έχουν ελληνική. Ο Σολωμός ελέγχει 27 σημάδια, το καθένα με εξήγηση και παράδειγμα πριν και μετά. Όλα βρίσκονται στο [SKILL.md](SKILL.md).
+
+Ο στόχος είναι να διαβάζεται το κείμενο από ανθρώπους. Δεν προσπαθεί να ξεγελάσει τα εργαλεία που ανιχνεύουν κείμενα μηχανής.
 
 ## Εγκατάσταση
 
-```bash
+Στο Claude: κατέβασε το αποθετήριο ως συμπιεσμένο αρχείο (Code, Download ZIP) και ανέβασέ το στις Ρυθμίσεις, στις δεξιότητες.
+
+Στο Claude Code:
+
+```
 cd ~/.claude/skills
 git clone https://github.com/kesidisthanos/solomos.git
 ```
 
-Από τη στιγμή που τα αρχεία βρεθούν στον φάκελο `~/.claude/skills/solomos/`, το Claude Code τα διαβάζει αυτόματα στην επόμενη συνεδρία. Καμία περαιτέρω ρύθμιση.
+## Πώς το χρησιμοποιείς
 
-## Πώς το καλείς
+Ζήτα κάτι σαν «διόρθωσε αυτό το κείμενο», «κάν' το να ακούγεται σαν να το έγραψε άνθρωπος» ή «γράψε μια ανάρτηση για...». Αν θέλεις να ακούγεται σαν εσένα, δώσε μαζί δύο τρεις παραγράφους από δικό σου κείμενο.
 
-Μέσα σε οποιαδήποτε συνεδρία Claude Code, ζήτα κάτι από τα παρακάτω:
+## Από πού προέρχεται
 
-- «επιμελήσου αυτό το ελληνικό κείμενο σε register marketing: ...»
-- «διόρθωσε τη μηχανική μετάφραση: ...»
-- «ξαναγράψε αυτό φυσικά σε register business: ...»
-- «κάνε το να ακούγεται σαν Έλληνας να το έγραψε»
+Η δομή και τα περισσότερα γενικά σημάδια προέρχονται από το [humanizer](https://github.com/blader/humanizer), που βασίζεται στον οδηγό της Βικιπαίδειας [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing). Τα ελληνικά σημάδια και όλα τα παραδείγματα γράφτηκαν από την αρχή για τα ελληνικά.
 
-Ο Σολωμός ενεργοποιείται αυτόματα.
+Ο έλεγχος `python3 tests/check.py` βεβαιώνει ότι το SKILL.md δεν έχει λατινικούς χαρακτήρες, εικονίδια ή παύλες.
 
-## Έγκυρα registers
-
-| Register | Περιγραφή |
-|----------|-----------|
-| **lexilog** | λήμματα λεξικού για διδασκόμενους τα ελληνικά (B2/C1/C2) |
-| **marketing** | διαφημιστικό κείμενο, brand copy |
-| **business** | επαγγελματική αλληλογραφία, B2B έγγραφα |
-| **formal** | επίσημο, θεσμικό, νομικό-ύφος |
-| **casual** | προσωπικά μηνύματα, εσωτερική επικοινωνία ομάδας |
-
-## Παράδειγμα
-
-**Πρωτότυπο** (business register, με τυπικά κλισέ AI):
-
-> Σας γράφω σήμερα για να ακουμπήσουμε βάση σχετικά με τη νέα στρατηγική. Στο τέλος της ημέρας, εγώ πιστεύω ότι είναι κρίσιμο να κάνουμε focus στην εμπειρία του χρήστη.
-
-**Επιμελημένο:**
-
-> Σχετικά με τη νέα στρατηγική: εν τέλει, έχει κρίσιμη σημασία να εστιάσουμε στο πώς βιώνει ο χρήστης το προϊόν.
-
-## Δομή των αρχείων
-
-```
-solomos/
-├── SKILL.md                  # Κύριες οδηγίες (12 Θεμελιώδεις Κανόνες, δείγμα φωνής)
-├── scenarios/                # 24 σενάρια χρήσης, καθένα self-contained
-│   └── README.md             # ευρετήριο σεναρίων
-├── references/
-│   ├── generate.md           # πρωτόκολλο σύνταξης
-│   ├── polish.md             # πρωτόκολλο επιμέλειας: σημάδια → draft → έλεγχος → τελικό
-│   ├── judgment.md           # λεπτές αποφάσεις (πρόθεση, ευέλικτα vs απόλυτα)
-│   ├── patterns.yaml         # κατάλογος σημαδιών με βαθμίδα ισχύος και μηχανισμό
-│   ├── few_shot.yaml         # παραδείγματα ανά σενάριο
-│   └── positive-patterns.md  # το θετικό πρότυπο ανά register (καθοδηγεί τη γραφή/επιμέλεια)
-└── tests/                    # pressure tests
-```
-
-## Φιλοσοφία
-
-Το [SKILL.md](SKILL.md) είναι η κανονική πηγή για τους δώδεκα Θεμελιώδεις Κανόνες και την υπόλοιπη συμπεριφορά του skill. Για να μη γίνει drift, οι κανόνες δεν αναπαράγονται εδώ.
-
-## Συνεισφορά
-
-Νέα μοτίβα, διορθώσεις σε ιδιωματισμούς, και προτάσεις για νέους κανόνες είναι ευπρόσδεκτα. Άνοιξε [issue](https://github.com/kesidisthanos/solomos/issues) ή στείλε pull request. Κάθε νέο μοτίβο στο `references/patterns.yaml` πρέπει να έχει `id`, `category`, `strength` (1 έως 3), `why` (ο μηχανισμός: γιατί προδίδει AI), `bad`, `good` και `registers`· προαιρετικά `keep_when`, `absolute`, `context`. Το `tests/static_check.py` το ελέγχει.
-
-## Άδεια χρήσης
+## Άδεια
 
 [MIT](LICENSE).
-
----
-
-## English summary
-
-**Solomos** is a Claude Code skill for editing Greek text that has been generated by AI or produced via machine translation. It recognizes the patterns that betray such origins (calques, awkward syntax, register mismatches, hollow marketing clichés) and rewrites the text in natural Greek that respects the register of the original.
-
-Five supported registers: `lexilog`, `marketing`, `business`, `formal`, `casual`.
-
-To install, clone into `~/.claude/skills/`. Claude Code auto-discovers it on next session.
-
-The skill enforces twelve fundamental rules, including: don't translate thought (think directly in Greek), apply a native-speaker check before sending, avoid English SVO rigidity in favor of Greek's flexibility, replace clichés creatively rather than just deleting them, avoid the over-correction trap, replace olfactory metaphors for language ("smells of translation") by default, ban em-dashes in Greek prose, and ban AI-slop strategic forms (listicle tricolons, triple-adjective stacks, therapy-speak).
-
-Beyond translationese, it catches the structural tells of Greek that an AI wrote directly ("Δεν είναι απλώς Χ, είναι Υ", one-line closers, staged openers, inflated significance, chatbot residue). Each pattern carries a strength tier (act on one sighting, act normally, or weak alone) and the mechanism behind it, so variants get caught too. Polishing runs as an explicit loop (mark tells → draft → check facts and surviving tells → final), with separate output contracts for pasted text, files, and embedded use. A short sample of the user's own writing sets the voice.
-
-The full ruleset, polish loop, and pattern library are documented in [SKILL.md](SKILL.md) and [references/patterns.yaml](references/patterns.yaml). Both are in Greek, since the tool itself reasons in Greek.
