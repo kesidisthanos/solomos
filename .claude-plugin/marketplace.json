@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "solomos",
+  "owner": {
+    "name": "kesidisthanos",
+    "url": "https://github.com/kesidisthanos"
+  },
+  "description": "Install Solomos as a Claude plugin.",
+  "plugins": [
+    {
+      "name": "solomos",
+      "source": "./",
+      "description": "Write, edit, and translate Greek so it reads like a native writer wrote it, without AI or translation tells.",
+      "license": "MIT",
+      "keywords": ["greek", "writing", "editing", "translation", "humanize"]
+    }
+  ]
+}

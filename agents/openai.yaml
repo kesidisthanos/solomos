@@ -1,0 +1,4 @@
+interface:
+  display_name: "Solomos"
+  short_description: "Natural Greek without AI or translation tells"
+  default_prompt: "Use $solomos to make this Greek text read like a native writer wrote it, without changing its facts."
