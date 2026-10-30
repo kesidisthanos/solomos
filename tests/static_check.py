@@ -24,8 +24,6 @@ REQUIRED_FILES = [
     "README.md",
     "references/generate.md",
     "references/polish.md",
-    "references/critique.md",
-    "references/refine.md",
     "references/few_shot.yaml",
     "references/patterns.yaml",
     "references/judgment.md",
@@ -200,6 +198,38 @@ def check_bad_terms():
     return bad_term_hits, followup_hits, formatting_hits
 
 
+PATTERN_REQUIRED_KEYS = ("id", "category", "strength", "why", "bad", "good", "registers")
+
+
+def check_pattern_schema():
+    """Every pattern in references/patterns.yaml carries the fields the polish
+    loop relies on: a strength tier (1-3) and the mechanism (`why`).
+    Regex-based on purpose, so the check needs no PyYAML."""
+    errors = []
+    path = ROOT / "references/patterns.yaml"
+    if not path.is_file():
+        return errors
+    text = path.read_text(encoding="utf-8")
+    blocks = re.split(r"^  - (?=id:)", text, flags=re.M)[1:]
+    if not blocks:
+        errors.append("patterns.yaml: no patterns found")
+    seen = set()
+    for block in blocks:
+        m = re.match(r"id:\s*(\S+)", block)
+        pid = m.group(1) if m else "<no id>"
+        if pid in seen:
+            errors.append(f"patterns.yaml: duplicate id {pid}")
+        seen.add(pid)
+        keys = {"id"} | set(re.findall(r"^    ([a-z_]+):", block, flags=re.M))
+        for key in PATTERN_REQUIRED_KEYS:
+            if key not in keys:
+                errors.append(f"patterns.yaml: {pid} missing `{key}`")
+        sm = re.search(r"^    strength:\s*(\S+)", block, flags=re.M)
+        if sm and sm.group(1) not in ("1", "2", "3"):
+            errors.append(f"patterns.yaml: {pid} strength must be 1, 2 or 3 (got {sm.group(1)})")
+    return errors
+
+
 def main():
     sections = []
 
@@ -212,6 +242,7 @@ def main():
     sections.append(("follow-up outside allowed scope", followup_hits))
     sections.append(("formatting outside allowed context", formatting_hits))
     sections.append(("Em/en-dash in Greek prose (§10)", check_em_dashes()))
+    sections.append(("Pattern schema (strength, why)", check_pattern_schema()))
 
     total = 0
     for name, errs in sections:

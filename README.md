@@ -48,15 +48,14 @@ git clone https://github.com/kesidisthanos/solomos.git
 
 ```
 solomos/
-├── SKILL.md                  # Κύριες οδηγίες (12 Θεμελιώδεις Κανόνες, τριπλή ροή)
+├── SKILL.md                  # Κύριες οδηγίες (12 Θεμελιώδεις Κανόνες, δείγμα φωνής)
 ├── scenarios/                # 24 σενάρια χρήσης, καθένα self-contained
 │   └── README.md             # ευρετήριο σεναρίων
 ├── references/
 │   ├── generate.md           # πρωτόκολλο σύνταξης
-│   ├── polish.md             # πρωτόκολλο επιμέλειας
-│   ├── critique.md           # πρωτόκολλο κριτικής
-│   ├── refine.md             # πρωτόκολλο αναθεώρησης
-│   ├── patterns.yaml         # κατάλογος AI tics (φόρτωσε on demand, στο καθάρισμα)
+│   ├── polish.md             # πρωτόκολλο επιμέλειας: σημάδια → draft → έλεγχος → τελικό
+│   ├── judgment.md           # λεπτές αποφάσεις (πρόθεση, ευέλικτα vs απόλυτα)
+│   ├── patterns.yaml         # κατάλογος σημαδιών με βαθμίδα ισχύος και μηχανισμό
 │   ├── few_shot.yaml         # παραδείγματα ανά σενάριο
 │   └── positive-patterns.md  # το θετικό πρότυπο ανά register (καθοδηγεί τη γραφή/επιμέλεια)
 └── tests/                    # pressure tests
@@ -68,7 +67,7 @@ solomos/
 
 ## Συνεισφορά
 
-Νέα μοτίβα, διορθώσεις σε ιδιωματισμούς, και προτάσεις για νέους κανόνες είναι ευπρόσδεκτα. Άνοιξε [issue](https://github.com/kesidisthanos/solomos/issues) ή στείλε pull request. Κάθε νέο μοτίβο στο `references/patterns.yaml` πρέπει να έχει `id`, `category`, `bad`, `good`, `context`, και `registers`.
+Νέα μοτίβα, διορθώσεις σε ιδιωματισμούς, και προτάσεις για νέους κανόνες είναι ευπρόσδεκτα. Άνοιξε [issue](https://github.com/kesidisthanos/solomos/issues) ή στείλε pull request. Κάθε νέο μοτίβο στο `references/patterns.yaml` πρέπει να έχει `id`, `category`, `strength` (1 έως 3), `why` (ο μηχανισμός: γιατί προδίδει AI), `bad`, `good` και `registers`· προαιρετικά `keep_when`, `absolute`, `context`. Το `tests/static_check.py` το ελέγχει.
 
 ## Άδεια χρήσης
 
@@ -84,6 +83,8 @@ Five supported registers: `lexilog`, `marketing`, `business`, `formal`, `casual`
 
 To install, clone into `~/.claude/skills/`. Claude Code auto-discovers it on next session.
 
-The skill enforces twelve fundamental rules, including: don't translate thought (think directly in Greek), apply a native-speaker check before sending, avoid English SVO rigidity in favor of Greek's flexibility, replace clichés creatively rather than just deleting them, avoid the over-correction trap, ban olfactory metaphors for language ("smells of translation"), ban em-dashes in Greek prose, and ban AI-slop strategic forms (listicle tricolons, triple-adjective stacks, therapy-speak).
+The skill enforces twelve fundamental rules, including: don't translate thought (think directly in Greek), apply a native-speaker check before sending, avoid English SVO rigidity in favor of Greek's flexibility, replace clichés creatively rather than just deleting them, avoid the over-correction trap, replace olfactory metaphors for language ("smells of translation") by default, ban em-dashes in Greek prose, and ban AI-slop strategic forms (listicle tricolons, triple-adjective stacks, therapy-speak).
 
-The full ruleset, three-pass workflow (επιμέλεια → κριτική → αναθεώρηση), and pattern library are documented in [SKILL.md](SKILL.md) and [references/patterns.yaml](references/patterns.yaml). Both are in Greek, since the tool itself reasons in Greek.
+Beyond translationese, it catches the structural tells of Greek that an AI wrote directly ("Δεν είναι απλώς Χ, είναι Υ", one-line closers, staged openers, inflated significance, chatbot residue). Each pattern carries a strength tier (act on one sighting, act normally, or weak alone) and the mechanism behind it, so variants get caught too. Polishing runs as an explicit loop (mark tells → draft → check facts and surviving tells → final), with separate output contracts for pasted text, files, and embedded use. A short sample of the user's own writing sets the voice.
+
+The full ruleset, polish loop, and pattern library are documented in [SKILL.md](SKILL.md) and [references/patterns.yaml](references/patterns.yaml). Both are in Greek, since the tool itself reasons in Greek.
