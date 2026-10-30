@@ -1385,8 +1385,10 @@ tests:
       μόνη της δεν απαντά.»
     expected_scenario: linkedin-post
     must_do:
-      - "Output keeps every fact: Mass General Brigham, 40+ εκατ. φωτογραφίες, top vs bottom quarter, >3x mortality, adjusted for clinical factors, prediction study."
+      - "Output keeps the core facts correct: Mass General Brigham, 40+ εκατ. φωτογραφίες, high vs low risk group, >3x risk of death, adjusted for what doctors already check. Secondary details may be cut if listed under changes."
       - "Output restructures the post instead of patching sentence by sentence."
+      - "Output uses reader words: no «θνησιμότητα», «τεταρτημόριο», «κλινικοί παράγοντες», «βιολογική ηλικία», «ευθραυστότητα του οργανισμού»."
+      - "Any first-person reaction not in the draft is flagged as the skill's own addition."
       - "Output starts with the edited text. No score, no verdict line."
     must_avoid:
       - "Opening hook question («Πόσα μπορεί να πει...»)."
@@ -1398,7 +1400,9 @@ tests:
       Real failure, 2026-10-30. The skill swapped one staged label for
       another, scored itself 6 → 8.5, and kept the AI post skeleton intact.
       Root causes: §8 creative substitution applied to structural tells; the
-      change counter discouraged paragraph rewrites; self-scoring.
+      change counter discouraged paragraph rewrites; self-scoring. Second and
+      third rejections («jargon», «robotic, too curated») led to judgment.md
+      §8 and §9. Approved version is the example in scenarios/linkedin-post.md.
 
   # =================================================================
   # voice_sample: the user's own writing sets the voice
