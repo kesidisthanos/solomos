@@ -1,0 +1,4 @@
+# Leave plugin manifests out of "Download ZIP": Claude Desktop rejects a skill that contains one.
+# Plugin installs clone the repo, so they still get these files.
+.claude-plugin export-ignore
+.gitattributes export-ignore
