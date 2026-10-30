@@ -75,11 +75,12 @@ Lightweight gate που πιάνει structural drift, όχι runtime ποιότ
 
 Τι ελέγχει:
 
-- Τα required αρχεία του skill υπάρχουν: `SKILL.md`, `README.md`, `scenarios/README.md`, τα `references/generate.md`, `references/polish.md`, `references/critique.md`, `references/refine.md`, `references/judgment.md`, `references/positive-patterns.md`, και τα `references/few_shot.yaml`, `references/patterns.yaml`.
+- Τα required αρχεία του skill υπάρχουν: `SKILL.md`, `README.md`, `scenarios/README.md`, τα `references/generate.md`, `references/polish.md`, `references/judgment.md`, `references/positive-patterns.md`, και τα `references/few_shot.yaml`, `references/patterns.yaml`.
 - Κανένα stale root file δεν έχει επιζήσει από προ-restructure εκδόσεις (`critique.md`, `polish.md`, κ.λπ.).
 - Το `scenarios/README.md` και ο φάκελος `scenarios/` έχουν την ίδια λίστα αρχείων.
 - Δεν επανεμφανίζονται γνωστοί κακοί όροι που έχουν διορθωθεί (π.χ. `Default register`, `Παραδοτέο format`, `## Output`, `## Inputs`, `μυρίζει αγγλικά`).
 - Το `follow-up` και το `formatting` εμφανίζονται μόνο στα επιτρεπτά τους περιβάλλοντα.
+- Κάθε μοτίβο στο `patterns.yaml` έχει `id`, `category`, `strength` (1 έως 3), `why`, `bad`, `good`, `registers`, και κανένα `id` δεν επαναλαμβάνεται.
 
 Πότε γίνεται:
 

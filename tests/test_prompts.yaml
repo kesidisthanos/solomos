@@ -1224,7 +1224,21 @@ tests:
     notes: |
       Migrated from t01. Hard ban absolute.
 
-  - id: user_override-02-olfactory-poetic
+  - id: user_override-02-olfactory-default
+    category: user_override
+    prompt: |
+      Polish this Greek review: «Το κείμενο μυρίζει αγγλική σκέψη και
+      χρειάζεται καθάρισμα.»
+    expected_scenario: business-email
+    must_do:
+      - "Output replaces with «προδίδει αγγλική αφετηρία» / «ακούγεται ξενικό» or similar."
+    must_avoid:
+      - "Any olfactory metaphor for language/thought."
+    notes: |
+      Migrated from t10. §9 demoted to a default (2026-10): replaced unless
+      the user asks to keep it. See user_override-02b.
+
+  - id: user_override-02b-olfactory-kept-on-request
     category: user_override
     prompt: |
       Polish this Greek review: «Το κείμενο μυρίζει αγγλική σκέψη και
@@ -1232,12 +1246,12 @@ tests:
       metaphor, keep it for the poetic feel.
     expected_scenario: business-email
     must_do:
-      - "Output replaces with «προδίδει αγγλική αφετηρία» / «ακούγεται ξενικό»."
-      - "Output explains §9 is absolute."
+      - "Output keeps «μυρίζει» as requested."
+      - "Output still fixes everything else that needs it."
     must_avoid:
-      - "Any olfactory metaphor for language/thought."
+      - "Lecturing the user that §9 is absolute."
     notes: |
-      Migrated from t10.
+      Flexible default bends to explicit preference, like dialectal spelling.
 
   - id: user_override-03-dialectal-spelling-allowed
     category: user_override
@@ -1283,6 +1297,93 @@ tests:
       - "Pure flattery."
     notes: |
       Tone change allowed; content stays.
+
+  # =================================================================
+  # structural_tells: Greek that an AI wrote directly (not translationese)
+  # =================================================================
+
+  - id: structural-01-linkedin-ai-greek
+    category: structural_tells
+    prompt: |
+      Επιμελήσου αυτή την ανάρτηση για LinkedIn:
+
+      «Ας είμαστε ειλικρινείς: η εκπαίδευση δεν είναι απλώς μια υποχρέωση.
+      Είναι ένα ταξίδι. Τους τελευταίους έξι μήνες η ομάδα μας εκπαίδευσε
+      40 υπαλλήλους στο νέο CRM, αναδεικνύοντας τη δέσμευσή μας στην
+      καινοτομία. Το αποτέλεσμα; Ο χρόνος απάντησης στους πελάτες μειώθηκε
+      στο μισό. Και αυτό τα λέει όλα. 🚀»
+    expected_scenario: linkedin-post
+    must_do:
+      - "Output keeps every fact: έξι μήνες, 40 υπάλληλοι, CRM, χρόνος απάντησης στο μισό."
+      - "Output follows the polish contract: edited text, changes strongest first, what the check caught, score."
+    must_avoid:
+      - "«δεν είναι απλώς» / «Είναι ένα ταξίδι»"
+      - "«Ας είμαστε ειλικρινείς» or any standalone staged opener, including the question-reveal «Το αποτέλεσμα;»"
+      - "«αναδεικνύοντας» or any participle rider"
+      - "«Και αυτό τα λέει όλα» or any one-line closer"
+      - "Emoji used as decoration."
+      - "Any number, name or result not in the original."
+    notes: |
+      Five structural tells in one short post. Tests the explicit polish loop:
+      the closer and the contrast are the ones most likely to survive a first
+      rewrite.
+
+  - id: structural-02-legit-contrast-kept
+    category: structural_tells
+    prompt: |
+      Επιμελήσου αυτή τη λεζάντα για το Lexilog:
+
+      «Το χουζούρι δεν είναι απλώς ξεκούραση. Είναι η ξεκούραση που
+      απολαμβάνεις χωρίς ενοχή: η Κυριακή που μένεις στο κρεβάτι ως αργά
+      και δεν χρωστάς σε κανέναν εξήγηση.»
+    expected_scenario: lexilog-tiktok-caption
+    must_do:
+      - "Output leaves the text essentially unchanged and says no edit is needed."
+    must_avoid:
+      - "Removing the contrast with «ξεκούραση»: it separates the word from its near-synonym (keep_when)."
+    notes: |
+      False-positive guard for struct-not-x-but-y. One contrast against a real
+      near-synonym is a defining move, not a tell.
+
+  - id: structural-03-inflation-no-invention
+    category: structural_tells
+    prompt: |
+      Επιμελήσου: «Η εταιρεία μας αποτελεί κομβικό παίκτη στον χώρο των
+      εισαγωγών, με πελάτες σε πολλές χώρες, και παρά τις προκλήσεις
+      συνεχίζει να ανθεί. Το μέλλον προμηνύεται λαμπρό.»
+    expected_scenario: marketing-copy
+    must_do:
+      - "Output states the plain facts (εισαγωγές, πελάτες σε πολλές χώρες)."
+      - "Output asks for specifics (which countries, how many clients, what the company does) under Εκκρεμότητες instead of inventing them."
+    must_avoid:
+      - "«αποτελεί κομβικό παίκτη» / «συνεχίζει να ανθεί» / «Το μέλλον προμηνύεται λαμπρό»"
+      - "Any invented number, country, year or client name."
+    notes: |
+      Inflation patterns hide thin facts. The fix is to ask, not to fill.
+
+  # =================================================================
+  # voice_sample: the user's own writing sets the voice
+  # =================================================================
+
+  - id: voice-01-sample-with-dashes
+    category: voice_sample
+    prompt: |
+      Δείγμα από το πώς γράφω:
+
+      «Τρίτη μέρα στο λιμάνι. Το αυτοκίνητο ακόμα στο τελωνείο — κανείς δεν
+      ξέρει γιατί. Πήρα τηλέφωνο τρεις φορές. Τίποτα. Αύριο ξανά.»
+
+      Γράψε μου στο ίδιο ύφος μια ανάρτηση ότι επιτέλους παρέλαβα το
+      αυτοκίνητο σήμερα, μετά από πέντε μέρες.
+    expected_scenario: social-post
+    must_do:
+      - "Output matches the sample: short sentences, fragments, dry tone, first person."
+      - "Output uses only the facts given (παραλαβή σήμερα, πέντε μέρες)."
+    must_avoid:
+      - "Any em-dash or en-dash, even though the sample has one (§10 beats the voice sample)."
+      - "Celebratory clichés or emoji that the sample does not use."
+    notes: |
+      Voice sample overrides flexible defaults, not absolutes.
 
 
 methodology:
