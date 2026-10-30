@@ -1315,7 +1315,7 @@ tests:
     expected_scenario: linkedin-post
     must_do:
       - "Output keeps every fact: έξι μήνες, 40 υπάλληλοι, CRM, χρόνος απάντησης στο μισό."
-      - "Output follows the polish contract: edited text, changes strongest first, what the check caught, score."
+      - "Output follows the polish contract: starts with the edited text, then at most 5 changes, then open questions if any. No score."
     must_avoid:
       - "«δεν είναι απλώς» / «Είναι ένα ταξίδι»"
       - "«Ας είμαστε ειλικρινείς» or any standalone staged opener, including the question-reveal «Το αποτέλεσμα;»"
@@ -1360,6 +1360,49 @@ tests:
       - "Any invented number, country, year or client name."
     notes: |
       Inflation patterns hide thin facts. The fix is to ask, not to fill.
+
+  - id: structural-04-research-post-skeleton
+    category: structural_tells
+    prompt: |
+      Επιμελήσου αυτή την ανάρτηση για LinkedIn:
+
+      «Πόσα μπορεί να πει ένα πρόσωπο για την υγεία μας; Ένας έμπειρος
+      γιατρός συχνά καταλαβαίνει με μια ματιά πόσο αντέχει ο ασθενής του.
+      Μια νέα μελέτη εξετάζει αν η τεχνητή νοημοσύνη μπορεί να κάνει αυτή
+      τη ματιά μέτρηση.
+
+      Ερευνητές του Mass General Brigham εκπαίδευσαν ένα μοντέλο σε
+      περισσότερες από 40 εκατομμύρια φωτογραφίες προσώπων [...] το ένα
+      τέταρτο που έκρινε πιο επιβαρυμένο είχε πάνω από τριπλάσια
+      θνησιμότητα από το τέταρτο με τον μικρότερο κίνδυνο [...]
+
+      Το ενδιαφέρον βρίσκεται αλλού: η ευθραυστότητα του οργανισμού [...]
+      ίσως αφήνει στο πρόσωπο ίχνη που μετριούνται.
+
+      Μένει όμως ένα σημαντικό όριο. Πρόκειται για μελέτη πρόβλεψης, όχι
+      για κλινική δοκιμή [...] Και ένα εργαλείο που «διαβάζει» την υγεία
+      από πρόσωπα θέτει ερωτήματα συναίνεσης και κατάχρησης που η επιστήμη
+      μόνη της δεν απαντά.»
+    expected_scenario: linkedin-post
+    must_do:
+      - "Output keeps the core facts correct: Mass General Brigham, 40+ εκατ. φωτογραφίες, high vs low risk group, >3x risk of death, adjusted for what doctors already check. Secondary details may be cut if listed under changes."
+      - "Output restructures the post instead of patching sentence by sentence."
+      - "Output uses reader words: no «θνησιμότητα», «τεταρτημόριο», «κλινικοί παράγοντες», «βιολογική ηλικία», «ευθραυστότητα του οργανισμού»."
+      - "Any first-person reaction not in the draft is flagged as the skill's own addition."
+      - "Output starts with the edited text. No score, no verdict line."
+    must_avoid:
+      - "Opening hook question («Πόσα μπορεί να πει...»)."
+      - "Any label-colon opener or its disguise: «Το ενδιαφέρον:», «Το ενδιαφέρον βρίσκεται αλλού:», «Μένει όμως ένα όριο»."
+      - "«θέτει ερωτήματα που η επιστήμη μόνη της δεν απαντά» or similar send-off."
+      - "«ΤΝ» as an abbreviation."
+      - "«να κάνει αυτή τη ματιά μέτρηση» (less idiomatic than the original)."
+    notes: |
+      Real failure, 2026-10-30. The skill swapped one staged label for
+      another, scored itself 6 → 8.5, and kept the AI post skeleton intact.
+      Root causes: §8 creative substitution applied to structural tells; the
+      change counter discouraged paragraph rewrites; self-scoring. Second and
+      third rejections («jargon», «robotic, too curated») led to judgment.md
+      §8 and §9. Approved version is the example in scenarios/linkedin-post.md.
 
   # =================================================================
   # voice_sample: the user's own writing sets the voice
