@@ -113,4 +113,4 @@ The infrastructure works. Subagents distinguish baseline vs with-skill behavior.
 
 ### Tests not yet run
 
-t02 (fabrication university essay), t04 (pop-psychology), t05 (marketing slop), t06 (over-correction trap), t07 (Greeklish orthography), t08 (lexilog pop-jargon), t09 (triple-adjective). These should be run when token budget permits, especially t02 (verifies the fabrication guard added to `generate.md`) and t05 (the marketing calque cluster).
+t02 (fabrication university essay), t04 (pop-psychology), t05 (marketing slop), t06 (over-correction trap), t07 (Greeklish orthography), t09 (triple-adjective). These should be run when token budget permits, especially t02 (verifies the fabrication guard added to `generate.md`) and t05 (the marketing calque cluster).

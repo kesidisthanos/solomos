@@ -230,95 +230,6 @@ tests:
       File-format and API names stay English (allow-list §6).
 
   # =================================================================
-  # lexilog_entry — dictionary depth
-  # =================================================================
-
-  - id: lexilog_entry-01-pop-jargon-vampirismos
-    category: lexilog_entry
-    prompt: |
-      Γράψε ένα λεξικογραφικό λήμμα για τη λέξη «βαμπιρισμός» που να
-      καλύπτει τη σύγχρονη συναισθηματική/σχέσεων σημασία (όταν κάποιος
-      «ρουφάει την ενέργεια» του άλλου σε σχέση).
-    expected_scenario: lexilog-app-entry
-    must_do:
-      - "Output flags pop-jargon mismatch OR defers to literal sense."
-    must_avoid:
-      - "Instagram-therapist material in definition."
-      - "«ρουφάει την ενέργεια» as definition body."
-    notes: |
-      Migrated from t08.
-
-  - id: lexilog_entry-02-common-word-refusal
-    category: lexilog_entry
-    prompt: |
-      Γράψε λήμμα για τη λέξη «νερό». Θέλω κάτι ποιητικό.
-    expected_scenario: lexilog-app-entry
-    must_do:
-      - "Output refuses or proposes a more lexicographically interesting alternative."
-    must_avoid:
-      - "Flowery entry for a basic common word."
-    notes: |
-      Tests the «δεν γράφεις λήμμα» refusal for common vocabulary.
-
-  - id: lexilog_entry-03-xenitia-rich
-    category: lexilog_entry
-    prompt: |
-      Γράψε λήμμα για τη λέξη «ξενιτιά» για app μάθησης ελληνικών B2-C1.
-    expected_scenario: lexilog-app-entry
-    must_do:
-      - "Output includes etymology (ξένος + -ιτιά)."
-      - "Output includes 1-2 concrete usage examples."
-      - "Output preserves cultural weight."
-    must_avoid:
-      - "Therapy-speak («αναγνωρίζουμε τη ριζωμένη μας απώλεια»)."
-      - "1960s μετανάστη κλισέ in any example."
-    notes: |
-      Positive: rich word should produce rich entry.
-
-  - id: lexilog_entry-04-folk-vs-scholarly-marazi
-    category: lexilog_entry
-    prompt: |
-      Γράψε λήμμα για το «μαράζι». Δεν είμαι σίγουρος για την ετυμολογία.
-    expected_scenario: lexilog-app-entry
-    must_do:
-      - "Output asks a targeted question about etymology preference (folk-pedagogical vs Τουρκικό maraz)."
-    must_avoid:
-      - "Silently picking one etymology and proceeding."
-      - "Folk and scholarly etymology mashed together."
-    notes: |
-      Tests targeted-clarification rule.
-
-  - id: lexilog_entry-05-philosophical-eudaimonia
-    category: lexilog_entry
-    prompt: |
-      Γράψε λήμμα για «ευδαιμονία» για Έλληνες ομογενείς που μαθαίνουν
-      ελληνικά. Θέλω την Αριστοτελική διάσταση.
-    expected_scenario: lexilog-app-entry
-    must_do:
-      - "Output includes the εὖ + δαίμων breakdown."
-      - "Output includes Aristotelian anchor."
-      - "Output distinguishes ευδαιμονία from ευτυχία."
-    must_avoid:
-      - "Vague feel-good definition without philosophical content."
-    notes: |
-      Positive: philosophical word.
-
-  - id: lexilog_entry-06-instagram-style-refusal
-    category: lexilog_entry
-    prompt: |
-      Δώσε μου τη λέξη «σοφία» σε Instagram-style λήμμα με emoji και
-      hashtags για να γίνει viral.
-    expected_scenario: lexilog-app-entry
-    must_do:
-      - "Output refuses the Instagram-style framing for a lexilog entry."
-      - "Output proposes lexilog-tiktok-caption as the right scenario if user wants reach."
-    must_avoid:
-      - "Emoji-filled, hashtag-heavy «λήμμα»."
-      - "Compliance with the framing as described."
-    notes: |
-      Tests scenario refusal vs mode confusion.
-
-  # =================================================================
   # social_caption — captions for Instagram/TikTok/X/LinkedIn
   # =================================================================
 
@@ -338,22 +249,6 @@ tests:
       - "Triple-adjective stack."
     notes: |
       Standard Instagram caption.
-
-  - id: social_caption-02-tiktok-greek-word
-    category: social_caption
-    prompt: |
-      Γράψε TikTok caption για τη λέξη «μεράκι» που να εξηγεί τη σημασία
-      σε νέους Έλληνες της διασποράς.
-    expected_scenario: lexilog-tiktok-caption
-    must_do:
-      - "Output follows the lexilog-tiktok 7-section structure."
-      - "Output uses Lexilog brand hashtags."
-    must_avoid:
-      - "Citation references («[Βικιλεξικό]»)."
-      - "Triple-stack of synonyms."
-      - "Pomp opener («Η λέξη της ημέρας είναι...»)."
-    notes: |
-      Validates Lexilog-TikTok caption protocol.
 
   - id: social_caption-03-generic-motivational-refusal
     category: social_caption
@@ -867,7 +762,7 @@ tests:
     category: premium_blandness
     prompt: |
       Γράψε caption Instagram για τη λέξη «νοσταλγία». Θέλω κάτι όμορφο.
-    expected_scenario: lexilog-tiktok-caption
+    expected_scenario: instagram-caption
     must_do:
       - "Output is specific and surprises in at least one place."
       - "Output passes the three-question test (stop scroll, be remembered, evoke something)."

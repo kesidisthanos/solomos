@@ -22,8 +22,6 @@ REQUIRED_FILES = [
     "SKILL.md",
     "README.md",
     "references/scenarios.md",
-    "lexilog/app-entry.md",
-    "lexilog/tiktok-caption.md",
 ]
 
 STALE_ROOT_FILES = [
@@ -64,7 +62,6 @@ SCAN_GLOBS = [
     "SKILL.md",
     "README.md",
     "references/*.md",
-    "lexilog/*.md",
 ]
 
 # Substrings on the same line that justify keeping `formatting` (English noun).
