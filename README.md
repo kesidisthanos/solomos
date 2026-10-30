@@ -4,12 +4,30 @@ Skill για το [Claude Code](https://claude.com/claude-code) που γράφ�
 
 ## Εγκατάσταση
 
-```bash
-cd ~/.claude/skills
-git clone https://github.com/kesidisthanos/solomos.git
+### Claude Code
+
+```text
+/plugin marketplace add kesidisthanos/solomos
+/plugin install solomos@solomos
 ```
 
-Το Claude Code το βρίσκει μόνο του στην επόμενη συνεδρία.
+### Codex
+
+```bash
+npx skills add kesidisthanos/solomos --global --agent codex
+```
+
+### Claude.ai και Claude Desktop
+
+Κατέβασε το αποθετήριο ως ZIP (**Code → Download ZIP**) και ανέβασέ το ως skill στις Ρυθμίσεις.
+
+### Άλλα εργαλεία
+
+```bash
+npx skills add kesidisthanos/solomos --global --agent '*'
+```
+
+Για εργαλείο που δεν υποστηρίζεται, αντίγραψε το `SKILL.md` και τον φάκελο `references/` στον φάκελο skills του.
 
 ## Πώς το καλείς
 
@@ -37,6 +55,8 @@ solomos/
 ├── SKILL.md                 # όλες οι οδηγίες: τρόπος δουλειάς και 24 μοτίβα κατά σειρά ισχύος
 ├── references/
 │   └── scenarios.md         # μορφή, μήκος και παγίδες ανά είδος κειμένου
+├── .claude-plugin/          # plugin και marketplace για το Claude Code
+├── agents/openai.yaml       # όνομα και περιγραφή για Codex
 └── tests/                   # στατικός έλεγχος και υλικό δοκιμών
 ```
 

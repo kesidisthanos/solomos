@@ -1,6 +1,9 @@
 ---
 name: solomos
-description: Use when writing, polishing, or translating Greek text in any register or scenario, including dictionary entries, social posts (TikTok, Instagram, LinkedIn, Facebook, X, Threads), business emails, CVs, cover letters, marketing copy, product descriptions, press releases, news articles, legal letters, WhatsApp messages, greetings and wishes, school essays, university papers, blog posts, personal essays, recipes and how-to instructions, app UI copy and error messages, customer service letters, sales proposals, speeches and toasts. Replaces anthropic-skills:greek-writing for all Greek output.
+description: Use when writing, polishing, or translating Greek text in any register or scenario, including dictionary entries, social posts (TikTok, Instagram, LinkedIn, Facebook, X, Threads), business emails, CVs, cover letters, marketing copy, product descriptions, press releases, news articles, legal letters, WhatsApp messages, greetings and wishes, school essays, university papers, blog posts, personal essays, recipes and how-to instructions, app UI copy and error messages, customer service letters, sales proposals, speeches and toasts.
+license: MIT
+metadata:
+  version: "2.0.0"
 ---
 
 # Σολωμός: φυσικά ελληνικά χωρίς σημάδια AI και μετάφρασης

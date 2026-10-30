@@ -1,0 +1,14 @@
+{
+  "name": "solomos",
+  "description": "Write, edit, and translate Greek so it reads like a native writer wrote it, without AI or translation tells.",
+  "version": "2.0.0",
+  "author": {
+    "name": "kesidisthanos",
+    "url": "https://github.com/kesidisthanos"
+  },
+  "homepage": "https://github.com/kesidisthanos/solomos",
+  "repository": "https://github.com/kesidisthanos/solomos",
+  "license": "MIT",
+  "keywords": ["greek", "writing", "editing", "translation", "humanize"],
+  "skills": ["./"]
+}
